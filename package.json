@@ -1,0 +1,46 @@
+{
+  "name": "mental-health-tracker",
+  "version": "1.0.0",
+  "description": "Offline Mental Health Tracker",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "webpack --mode development && electron .",
+    "build": "webpack --mode production && electron-builder",
+    "watch": "webpack --mode development --watch"
+  },
+  "keywords": ["mental-health", "tracker", "offline", "electron"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.17.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "css-loader": "^7.1.2",
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.6",
+    "html-webpack-plugin": "^5.6.0",
+    "style-loader": "^3.3.4",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.7.2",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "build": {
+    "appId": "com.mentalhealth.tracker",
+    "productName": "Mental Health Tracker",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "dist/**/*",
+      "node_modules/**/*"
+    ]
+  }
+}

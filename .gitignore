@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+web-app/node_modules/
+
+# Build outputs
+build/
+dist/
+web-app/dist/
+web-app/build/
+
+# Electron artifacts
+release/
+out/
+web-app/out/
+*.asar
+win-unpacked/
+web-app/win-unpacked/
+
+# Caches
+.cache/
+web-app/.cache/
+web-app/node_modules/.cache/
+web-app/.parcel-cache/
+.parcel-cache/
+.eslintcache
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python/venv
+backend_django/.venv/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# OS/Editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.*
+
+# Coverage
+coverage/
+
+# Misc
+*.tgz
+*.zip
+*.7z
+*.bak
+
+
