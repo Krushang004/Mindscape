@@ -1,14 +1,19 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from datetime import datetime, timedelta
+import random
+import string
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils import timezone
 from .models import (
     User, Mood, Activity, Goal, DailyEntry, EntryActivity, MoodLog, Suggestion,
     MeditationSession, Habit, HabitCompletion, Insight,
-    AssessmentQuestionnaire, AssessmentResponse
+    AssessmentQuestionnaire, AssessmentResponse, PasswordResetOTP
 )
 from .serializers import (
     UserSerializer, MoodSerializer, ActivitySerializer, GoalSerializer,
@@ -51,6 +56,179 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def request_password_reset_otp(self, request):
+        """Request OTP for password reset - works for any email"""
+        email = request.data.get('email', '').strip().lower()
+        
+        print(f"=== OTP Request Received ===")
+        print(f"Email: {email}")
+        print(f"Request data: {request.data}")
+        
+        if not email:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate email format
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError
+        try:
+            validate_email(email)
+        except ValidationError:
+            return Response({'error': 'Invalid email format'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if user exists (for logging only)
+        user_exists = User.objects.filter(email=email).exists()
+        print(f"User exists: {user_exists}")
+        
+        # Generate 6-digit OTP
+        otp = ''.join(random.choices(string.digits, k=6))
+        expires_at = timezone.now() + timedelta(minutes=10)
+        
+        # Invalidate previous OTPs for this email
+        PasswordResetOTP.objects.filter(email=email, is_used=False).update(is_used=True)
+        
+        # Create new OTP
+        otp_obj = PasswordResetOTP.objects.create(
+            email=email,
+            otp=otp,
+            expires_at=expires_at
+        )
+        print(f"OTP created for {email}: {otp} (expires at {expires_at})")
+        
+        # Send email
+        try:
+            result = send_mail(
+                subject='Password Reset OTP - Mental Health Tracker',
+                message=f'''Hello,
+
+You have requested to reset your password for Mental Health Tracker.
+
+Your OTP is: {otp}
+
+This OTP will expire in 10 minutes.
+
+If you did not request this password reset, please ignore this email.
+
+Best regards,
+Mental Health Tracker Team''',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+            print(f"Email sent successfully to {email}. Result: {result}")
+        except Exception as e:
+            import traceback
+            error_details = traceback.format_exc()
+            print(f"Error sending email: {e}")
+            print(f"Full traceback: {error_details}")
+            return Response({
+                'error': f'Failed to send OTP email: {str(e)}. Please try again later.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # For debugging: Also return OTP in development (remove in production)
+        response_data = {
+            'message': 'An OTP has been sent to your email address.'
+        }
+        if settings.DEBUG:
+            response_data['debug_otp'] = otp  # Only in DEBUG mode
+        
+        return Response(response_data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def verify_password_reset_otp(self, request):
+        """Verify OTP for password reset"""
+        email = request.data.get('email', '').strip().lower()
+        otp = request.data.get('otp', '').strip()
+        
+        if not email or not otp:
+            return Response({
+                'error': 'Email and OTP are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Find valid OTP
+        try:
+            otp_obj = PasswordResetOTP.objects.filter(
+                email=email,
+                otp=otp,
+                is_used=False,
+                expires_at__gt=timezone.now()
+            ).latest('created_at')
+        except PasswordResetOTP.DoesNotExist:
+            return Response({
+                'error': 'Invalid or expired OTP'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Mark OTP as used
+        otp_obj.is_used = True
+        otp_obj.save()
+        
+        return Response({
+            'message': 'OTP verified successfully',
+            'verified': True
+        }, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def reset_password(self, request):
+        """Reset password using verified OTP - creates user if doesn't exist"""
+        email = request.data.get('email', '').strip().lower()
+        otp = request.data.get('otp', '').strip()
+        new_password = request.data.get('new_password', '')
+        
+        if not email or not otp or not new_password:
+            return Response({
+                'error': 'Email, OTP, and new password are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if len(new_password) < 6:
+            return Response({
+                'error': 'Password must be at least 6 characters long'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verify OTP was used (from verify step)
+        try:
+            otp_obj = PasswordResetOTP.objects.filter(
+                email=email,
+                otp=otp,
+                is_used=True,
+                expires_at__gt=timezone.now() - timedelta(minutes=5)  # Allow 5 min window after verification
+            ).latest('created_at')
+        except PasswordResetOTP.DoesNotExist:
+            return Response({
+                'error': 'Invalid or expired OTP. Please request a new one.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Get or create user
+        try:
+            user = User.objects.get(email=email)
+            # User exists, just update password
+            user.set_password(new_password)
+            user.save()
+            print(f"Password reset for existing user: {email}")
+        except User.DoesNotExist:
+            # User doesn't exist, create new account
+            # Generate username from email
+            username = email.split('@')[0]
+            # Ensure username is unique
+            base_username = username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+            
+            # Create new user
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=new_password,
+                first_name='',
+                last_name=''
+            )
+            print(f"New user created during password reset: {email} (username: {username})")
+        
+        return Response({
+            'message': 'Password set successfully. You can now login with your email and password.'
+        }, status=status.HTTP_200_OK)
 
 
 class MoodViewSet(viewsets.ReadOnlyModelViewSet):

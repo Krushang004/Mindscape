@@ -1,0 +1,106 @@
+{
+  "expo": {
+    "name": "Mental Health Tracker",
+    "slug": "mental-health-tracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#667eea"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mentalhealthtracker.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to attach images to your mood entries.",
+        "NSPhotoLibraryAddUsageDescription": "This app needs permission to save images to your photo library.",
+        "NSCameraUsageDescription": "This app needs access to your camera to take photos for your mood entries.",
+        "NSMicrophoneUsageDescription": "This app does not use the microphone.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "associatedDomains": [
+        "applinks:mentalhealthtracker.app"
+      ]
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#667eea"
+      },
+      "package": "com.mentalhealthtracker.app",
+      "versionCode": 1,
+      "minSdkVersion": 21,
+      "targetSdkVersion": 34,
+      "compileSdkVersion": 34,
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET",
+        "android.permission.POST_NOTIFICATIONS"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "mentalhealthtracker"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "scheme": "mentalhealthtracker",
+    "extra": {
+      "eas": {
+        "projectId": "ee3a4ac8-6fdd-43d2-af51-9fe93ed8fa5f"
+      }
+    },
+    "plugins": [
+      [
+        "expo-sqlite",
+        {
+          "web": false
+        }
+      ],
+      "expo-file-system",
+      "expo-document-picker",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#667eea",
+          "sounds": []
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.995213787051-753lvtk01finhr7i9opjsj14bk4793fu"
+        }
+      ]
+    ],
+    "developmentClient": {
+      "silentLaunch": true
+    },
+    "owner": "krushang_04"
+  }
+}

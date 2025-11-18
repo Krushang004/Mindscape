@@ -312,3 +312,21 @@ class AssessmentAnswer(models.Model):
 
     class Meta:
         unique_together = ['response', 'question']
+
+
+class PasswordResetOTP(models.Model):
+    """OTP for password reset"""
+    email = models.EmailField()
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['email', 'otp']),
+        ]
+    
+    def __str__(self):
+        return f"OTP for {self.email}"

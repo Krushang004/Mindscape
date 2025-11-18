@@ -46,6 +46,11 @@ A comprehensive Django REST API backend for mental health tracking applications.
    cp env.example .env
    # Edit .env with your configuration
    ```
+   
+   **Important**: For OTP password reset to work:
+   - Set `EMAIL_HOST_PASSWORD` to your Gmail App Password
+   - Generate App Password: Google Account > Security > 2-Step Verification > App passwords
+   - The email `mhtguide@gmail.com` is already configured as the sender
 
 4. **Run migrations**
    ```bash
@@ -75,6 +80,12 @@ A comprehensive Django REST API backend for mental health tracking applications.
 - `GET /users/` - List users (admin only)
 - `GET /users/profile/` - Get current user profile
 - `PUT /users/update_profile/` - Update current user profile
+- `POST /users/request_password_reset_otp/` - Request OTP for password reset (public)
+- `POST /users/verify_password_reset_otp/` - Verify OTP (public)
+- `POST /users/reset_password/` - Reset password with verified OTP (public)
+
+#### Authentication
+- `POST /auth/google` - Google OAuth authentication (public)
 
 #### Moods (Read-only)
 - `GET /moods/` - List all moods
@@ -121,8 +132,27 @@ A comprehensive Django REST API backend for mental health tracking applications.
 The API uses JWT tokens for authentication. To authenticate:
 
 1. **Google OAuth**: POST to `/auth/google` with Google ID token
+   - Automatically creates or updates user account
+   - Returns JWT token and user data
 2. **Session Authentication**: For admin interface and testing
 3. **Token Authentication**: For API requests
+
+### Password Reset (OTP-based)
+
+The API supports OTP-based password reset:
+
+1. **Request OTP**: POST to `/api/users/request_password_reset_otp/` with email
+   - Sends 6-digit OTP to user's email
+   - OTP expires in 10 minutes
+2. **Verify OTP**: POST to `/api/users/verify_password_reset_otp/` with email and OTP
+   - Verifies the OTP and marks it as used
+3. **Reset Password**: POST to `/api/users/reset_password/` with email, OTP, and new_password
+   - Resets the user's password
+
+**Email Configuration**: 
+- Uses Gmail SMTP (mhtguide@gmail.com)
+- Requires Gmail App Password (not regular password)
+- Set `EMAIL_HOST_PASSWORD` in `.env` file
 
 ## 📊 Data Models
 
