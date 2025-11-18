@@ -27,7 +27,7 @@ Since Google OAuth requires HTTPS redirect URIs, we've set up a backend OAuth re
 
 1. In your `backend_django` folder, create or update `.env` file:
    ```env
-   GOOGLE_CLIENT_ID=995213787051-753lvtk01finhr7i9opjsj14bk4793fu.apps.googleusercontent.com
+   GOOGLE_CLIENT_ID=166015770712-3023heohgikc908m6l6n73fkbo5a1bbj.apps.googleusercontent.com
    GOOGLE_CLIENT_SECRET=your-client-secret-here
    ```
 

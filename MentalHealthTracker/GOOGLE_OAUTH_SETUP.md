@@ -44,7 +44,7 @@ After Google redirects to this endpoint, the Django backend exchanges the code f
 ### **Step 3: Verify App Configuration**
 
 The app is now configured to use:
-- **Client ID**: `995213787051-753lvtk01finhr7i9opjsj14bk4793fu.apps.googleusercontent.com`
+- **Client ID**: `166015770712-3023heohgikc908m6l6n73fkbo5a1bbj.apps.googleusercontent.com`
 - **Backend Redirect**: `https://<your-domain>/auth/google/callback` (update `<your-domain>` as needed)
 - **App Scheme**: `mentalhealthtracker` (defined in `app.json`) used only after the backend completes the OAuth flow
 

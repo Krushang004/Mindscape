@@ -51,7 +51,7 @@ The client IDs are configured in:
 - `src/utils/googleAuthNative.ts` - For native sign-in
 - `src/utils/googleAuth.ts` - For OAuth web flow
 
-Current client ID: `995213787051-753lvtk01finhr7i9opjsj14bk4793fu.apps.googleusercontent.com`
+Current client ID: `166015770712-3023heohgikc908m6l6n73fkbo5a1bbj.apps.googleusercontent.com`
 
 ### Step 3: Rebuild the App
 

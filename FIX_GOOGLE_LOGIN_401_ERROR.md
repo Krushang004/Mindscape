@@ -20,7 +20,7 @@ When you try to login, check your Django server logs. You should now see:
 ```
 OAuth Token Exchange:
   Redirect URI: https://chart-andy-businesses-drums.trycloudflare.com/auth/google/callback
-  Client ID: 995213787051-753lvtk...
+  Client ID: 166015770712-3023heohgik...
   Client Secret: SET (or MISSING!)
 ```
 
@@ -37,7 +37,7 @@ OAuth Token Exchange:
 
 2. **Create or update `.env` file in `backend_django` folder:**
    ```env
-   GOOGLE_CLIENT_ID=995213787051-753lvtk01finhr7i9opjsj14bk4793fu.apps.googleusercontent.com
+   GOOGLE_CLIENT_ID=166015770712-3023heohgikc908m6l6n73fkbo5a1bbj.apps.googleusercontent.com
    GOOGLE_CLIENT_SECRET=GOCSPX-your-actual-secret-here
    APP_JWT_SECRET=your-jwt-secret-here
    ```
@@ -81,7 +81,7 @@ The redirect URI must match **exactly** between:
 
 1. **Check your backend `.env` file:**
    ```env
-   GOOGLE_CLIENT_ID=995213787051-753lvtk01finhr7i9opjsj14bk4793fu.apps.googleusercontent.com
+   GOOGLE_CLIENT_ID=166015770712-3023heohgikc908m6l6n73fkbo5a1bbj.apps.googleusercontent.com
    ```
 
 2. **Verify in Google Console:**
@@ -108,7 +108,7 @@ The redirect URI must match **exactly** between:
    ```
    OAuth Token Exchange:
      Redirect URI: https://chart-andy-businesses-drums.trycloudflare.com/auth/google/callback
-     Client ID: 995213787051-753lvtk...
+     Client ID: 166015770712-3023heohgik...
      Client Secret: SET
    ```
 

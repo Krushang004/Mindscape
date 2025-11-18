@@ -9,7 +9,7 @@ You're getting "Error 400: invalid_request" because Google doesn't recognize the
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Navigate to **APIs & Services** → **Credentials**
-3. Find your **Web OAuth 2.0 Client ID** (the one with client ID: `995213787051-753lvtk01finhr7i9opjsj14bk4793fu.apps.googleusercontent.com`)
+3. Find your **Web OAuth 2.0 Client ID** (the one with client ID: `166015770712-3023heohgikc908m6l6n73fkbo5a1bbj.apps.googleusercontent.com`)
 4. Click **Edit** (pencil icon)
 5. Under **Authorized redirect URIs**, click **+ ADD URI**
 6. Add your backend redirect URI (replace `<your-domain>` with the HTTPS domain where the Django backend is hosted):

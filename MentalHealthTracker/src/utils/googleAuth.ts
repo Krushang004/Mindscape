@@ -16,7 +16,7 @@ export interface GoogleUser {
 WebBrowser.maybeCompleteAuthSession();
 
 // Real Google OAuth configuration
-const GOOGLE_CLIENT_ID = '995213787051-753lvtk01finhr7i9opjsj14bk4793fu.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '166015770712-3023heohgikc908m6l6n73fkbo5a1bbj.apps.googleusercontent.com';
 
 // Get redirect URI - uses dedicated OAuth base if provided
 const getRedirectUri = (): string => {
