@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    {
+      "source": "/auth/google/callback",
+      "destination": "/api/auth/google/callback"
+    }
+  ]
+}
+
