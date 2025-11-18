@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Linking } from 'react-native';
-import { API_BASE } from '../config';
+import { API_BASE, OAUTH_REDIRECT_BASE } from '../config';
 
 export interface GoogleUser {
   id: string;
@@ -18,13 +18,17 @@ WebBrowser.maybeCompleteAuthSession();
 // Real Google OAuth configuration
 const GOOGLE_CLIENT_ID = '995213787051-753lvtk01finhr7i9opjsj14bk4793fu.apps.googleusercontent.com';
 
-// Get redirect URI - always use HTTPS backend
+// Get redirect URI - uses dedicated OAuth base if provided
 const getRedirectUri = (): string => {
-  if (!API_BASE.startsWith('https://')) {
-    console.warn('Google OAuth: API_BASE should be HTTPS for redirect URIs. Current value:', API_BASE);
+  const base = (OAUTH_REDIRECT_BASE && OAUTH_REDIRECT_BASE.trim().length > 0)
+    ? OAUTH_REDIRECT_BASE
+    : API_BASE;
+
+  if (!base.startsWith('https://')) {
+    console.warn('Google OAuth: Redirect base should be HTTPS. Current value:', base);
   }
 
-  const normalizedBase = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+  const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
   const redirectUri = `${normalizedBase}/auth/google/callback`;
   console.log('Google OAuth: Using backend redirect URI:', redirectUri);
   return redirectUri;

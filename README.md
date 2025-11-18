@@ -111,6 +111,19 @@ A beautiful, offline-first desktop application for tracking your mental health a
 - Node.js (v16 or higher)
 - npm
 
+### Vercel OAuth Redirect API
+This repo now includes a lightweight serverless function under `api/auth/google/callback` which Vercel deploys automatically. It exchanges Google authorization codes for tokens and redirects back to the mobile app (`mentalhealthtracker://auth`). To configure it:
+
+1. In the Vercel project settings add the following Environment Variables:
+   - `GOOGLE_CLIENT_ID` – your web OAuth client ID
+   - `GOOGLE_CLIENT_SECRET` – client secret for the same OAuth client
+   - `APP_DEEP_LINK` – defaults to `mentalhealthtracker://auth`, override if you change the scheme
+   - `PUBLIC_BASE_URL` – optional override if the deployment URL differs from Vercel’s default
+2. Ensure the OAuth redirect URI `https://mental-health-tracker-xi.vercel.app/auth/google/callback` (or your custom Vercel domain) is added in Google Cloud Console.
+3. Update `MentalHealthTracker/src/config.ts` to set `OAUTH_REDIRECT_BASE` to this Vercel URL so the mobile app requests the correct redirect target.
+
+The rest of the API (`API_BASE`) can continue pointing at your Django backend; only the OAuth hop is handled by Vercel.
+
 ### Installation
 
 1. **Clone or download this project**

@@ -1,0 +1,8 @@
+{
+  "name": "mental-health-tracker-vercel",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "echo no-build"
+  }
+}

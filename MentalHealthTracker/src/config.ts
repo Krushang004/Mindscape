@@ -1,6 +1,8 @@
 // API Configuration
-// Backend base URL - must be HTTPS for OAuth. Replace with your deployed backend URL.
+// Backend base URL - must be HTTPS for API requests. Replace with your deployed backend URL.
 export const API_BASE = 'https://your-secure-backend-domain.com'; // TODO: update to real backend URL
+// Separate base for Google OAuth redirect handler (hosted on Vercel)
+export const OAUTH_REDIRECT_BASE = 'https://mental-health-tracker-xi.vercel.app'; // Update if Vercel domain changes
 export const API_VERSION = '/api';
 export const FULL_API_BASE = `${API_BASE}${API_VERSION}`;
 
