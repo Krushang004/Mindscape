@@ -111,18 +111,23 @@ A beautiful, offline-first desktop application for tracking your mental health a
 - Node.js (v16 or higher)
 - npm
 
-### Vercel OAuth Redirect API
-This repo now includes a lightweight serverless function under `api/auth/google/callback` which Vercel deploys automatically. It exchanges Google authorization codes for tokens and redirects back to the mobile app (`mentalhealthtracker://auth`). To configure it:
+### OAuth Redirect Server (Express + Vercel)
+Google Sign-In now runs through a dedicated Express server (`server.js`). The same logic is shared with the legacy Vercel serverless handler via `lib/googleOAuthCallback.js`, so you can deploy either as a long-running Node service (Render/Railway/Fly/etc.) or as a single Vercel function.
 
-1. In the Vercel project settings add the following Environment Variables:
-   - `GOOGLE_CLIENT_ID` – your web OAuth client ID
-   - `GOOGLE_CLIENT_SECRET` – client secret for the same OAuth client
-   - `APP_DEEP_LINK` – defaults to `mentalhealthtracker://auth`, override if you change the scheme
-   - `PUBLIC_BASE_URL` – optional override if the deployment URL differs from Vercel’s default
-2. Ensure the OAuth redirect URI `https://mental-health-tracker-xi.vercel.app/auth/google/callback` (or your custom Vercel domain) is added in Google Cloud Console.
-3. Update `MentalHealthTracker/src/config.ts` to set `OAUTH_REDIRECT_BASE` to this Vercel URL so the mobile app requests the correct redirect target.
+#### Deploying as a server (recommended)
+1. Set the following environment variables wherever you host the Node server:
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `APP_DEEP_LINK` (defaults to `mentalhealthtracker://auth`)
+   - `PUBLIC_BASE_URL` (set to your server’s public HTTPS URL)
+2. Deploy `server.js` — for example `npm run start` locally or via Docker/PM2.
+3. Add `https://<your-domain>/auth/google/callback` to the Authorized redirect URIs in Google Cloud Console.
+4. Update `MentalHealthTracker/src/config.ts` so `OAUTH_REDIRECT_BASE` matches the deployed domain.
 
-The rest of the API (`API_BASE`) can continue pointing at your Django backend; only the OAuth hop is handled by Vercel.
+#### Deploying on Vercel
+`vercel.json` now routes all traffic to `server.js`, so Vercel hosts the same Express app behind a serverless entry point. Configure the same environment variables inside Vercel, redeploy, and the OAuth callback will behave identically.
+
+The rest of the application (`API_BASE`) can continue pointing at your Django backend; only the OAuth hop is handled by this Node service.
 
 ### Installation
 
