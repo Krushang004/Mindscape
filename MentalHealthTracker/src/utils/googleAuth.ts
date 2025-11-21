@@ -160,6 +160,7 @@ export const useGoogleAuth = () => {
         }
 
         // Get user info using the access token (or ID token if access token not available)
+        let user: GoogleUser | undefined;
         try {
           const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
             headers: {
@@ -180,27 +181,26 @@ export const useGoogleAuth = () => {
             name: userInfo.name 
           });
 
-          const user: GoogleUser = {
+          user = {
             id: userInfo.id || 'google_user_' + Math.random().toString(36).substring(2, 15),
             email: userInfo.email || 'unknown@example.com',
             name: userInfo.name || 'Google User',
             picture: userInfo.picture || 'https://via.placeholder.com/150/4285F4/ffffff?text=G',
             verified_email: userInfo.verified_email || false,
           };
-
-          return {
-            type: 'success' as const,
-            params: {
-              id_token: idToken,
-              user: user,
-              access_token: accessToken || '',
-              expires_in: 3600,
-            },
-          };
         } catch (userInfoError) {
-          console.error('Google OAuth: Error fetching user info:', userInfoError);
-          throw userInfoError;
+          console.error('Google OAuth: Error fetching user info, continuing with ID token only:', userInfoError);
         }
+
+        return {
+          type: 'success' as const,
+          params: {
+            id_token: idToken,
+            user,
+            access_token: accessToken || '',
+            expires_in: 3600,
+          },
+        };
       } catch (urlError) {
         console.error('Google OAuth: Error parsing redirect URL:', urlError);
         return { type: 'error' as const, error: 'Failed to parse OAuth response' };

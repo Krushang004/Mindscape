@@ -120,6 +120,7 @@ Google Sign-In now runs through a dedicated Express server (`server.js`). The sa
    - `GOOGLE_CLIENT_SECRET`
    - `APP_DEEP_LINK` (defaults to `mentalhealthtracker://auth`)
    - `PUBLIC_BASE_URL` (set to your server’s public HTTPS URL)
+   - `DJANGO_API_BASE_URL` (points at your Django backend, e.g. `https://api.example.com`)
 2. Deploy `server.js` — for example `npm run start` locally or via Docker/PM2.
 3. Add `https://<your-domain>/auth/google/callback` to the Authorized redirect URIs in Google Cloud Console.
 4. Update `MentalHealthTracker/src/config.ts` so `OAUTH_REDIRECT_BASE` matches the deployed domain.
@@ -128,6 +129,9 @@ Google Sign-In now runs through a dedicated Express server (`server.js`). The sa
 `vercel.json` now routes all traffic to `server.js`, so Vercel hosts the same Express app behind a serverless entry point. Configure the same environment variables inside Vercel, redeploy, and the OAuth callback will behave identically.
 
 The rest of the application (`API_BASE`) can continue pointing at your Django backend; only the OAuth hop is handled by this Node service.
+
+#### Syncing Google logins into Django
+The OAuth server now forwards every successful Google login to your Django backend by POSTing the received `id_token` (and access token when available) to `${DJANGO_API_BASE_URL}/auth/google`. Configure `DJANGO_API_BASE_URL` so the Express server can reach your Django deployment (local tunnel, ngrok, Render, etc.). This keeps the canonical user profile inside Django’s database automatically—no extra work on the mobile app is needed.
 
 ### Installation
 
