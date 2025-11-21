@@ -139,6 +139,8 @@ export default function LoginScreen({ navigation, onLogin }: LoginScreenProps) {
 
       // Send idToken to backend for verification and user creation
       try {
+        console.log('LoginScreen: Sending idToken to backend:', `${API_BASE}/auth/google`);
+        
         const response = await fetch(`${API_BASE}/auth/google`, {
           method: 'POST',
           headers: {
@@ -149,11 +151,18 @@ export default function LoginScreen({ navigation, onLogin }: LoginScreenProps) {
           }),
         });
 
-        const data = await response.json();
-
         if (!response.ok) {
-          throw new Error(data.message || 'Google authentication failed');
+          const errorText = await response.text();
+          let errorData;
+          try {
+            errorData = JSON.parse(errorText);
+          } catch {
+            errorData = { message: errorText || 'Google authentication failed' };
+          }
+          throw new Error(errorData.message || `Backend returned ${response.status}`);
         }
+
+        const data = await response.json();
 
         console.log('LoginScreen: Backend Google auth successful');
 
@@ -167,9 +176,18 @@ export default function LoginScreen({ navigation, onLogin }: LoginScreenProps) {
           await AsyncStorage.setItem('google_user_temp', JSON.stringify(data.user));
         }
 
+        // Get email from backend response or OAuth result
+        const userEmail = data.user?.email || result.user?.email || '';
+        
+        if (!userEmail) {
+          throw new Error('No email received from Google authentication');
+        }
+
+        console.log('LoginScreen: Calling onLogin with email:', userEmail);
+
         // Use the login handler with Google credentials
         await onLogin({
-          email: data.user?.email || result.user?.email || '',
+          email: userEmail,
           password: 'google_idtoken_verified'
         });
 

@@ -516,8 +516,10 @@ export const validateUserCredentials = async (email: string, password: string): 
       return { isValid: false, user: null };
     }
     
-    // Check password
-    if (result.password === password || password.startsWith('google_oauth_')) {
+    // Check password - accept exact match, google_oauth_ prefix, or google_idtoken_verified
+    if (result.password === password || 
+        password.startsWith('google_oauth_') || 
+        password === 'google_idtoken_verified') {
       const userSettings: UserSettings = {
         ...result,
         reminderEnabled: Boolean(result.reminderEnabled),

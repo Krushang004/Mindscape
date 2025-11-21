@@ -304,7 +304,8 @@ const AppNavigator = () => {
         // Ignore errors
       }
 
-      let userSettings = await getUserSettings();
+      // Use getUserByEmail instead of getUserSettings since user isn't in AsyncStorage yet
+      let userSettings = await getUserByEmail(credentials.email);
       console.log('Current user settings:', userSettings);
       console.log('User data from auth:', userData);
 
@@ -315,6 +316,7 @@ const AppNavigator = () => {
           id: userData.id,
           name: userName,
           email: userData.email,
+          password: credentials.password, // Preserve the password (google_idtoken_verified)
           reminderTime: '20:00',
           reminderEnabled: true,
           theme: 'light' as Theme,
@@ -333,6 +335,10 @@ const AppNavigator = () => {
           userSettings.name = userData.name;
         }
         userSettings.email = userData.email;
+        // Preserve the password (important for Google login)
+        if (!userSettings.password) {
+          userSettings.password = credentials.password;
+        }
         userSettings.updatedAt = new Date().toISOString();
         await saveUserSettings(userSettings);
       }
