@@ -78,9 +78,28 @@ class ApiService {
       const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
       if (token) {
         this.authToken = token;
+        console.log('API Service: Auth token initialized from storage');
+      } else {
+        console.log('API Service: No auth token found in storage');
       }
     } catch (error) {
       console.error('Failed to initialize auth:', error);
+    }
+  }
+  
+  // Refresh auth token from storage (useful after login)
+  public async refreshAuthToken() {
+    try {
+      const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+      if (token) {
+        this.authToken = token;
+        console.log('API Service: Auth token refreshed from storage');
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Failed to refresh auth token:', error);
+      return false;
     }
   }
 

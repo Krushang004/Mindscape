@@ -1,6 +1,11 @@
 // API Configuration
 // Backend base URL - must be HTTPS for API requests. Replace with your deployed backend URL.
-export const API_BASE = 'https://your-secure-backend-domain.com'; // TODO: update to real backend URL
+// IMPORTANT: Update this to your actual backend URL before building the APK!
+// Examples:
+//   Local dev (same network): 'http://192.168.0.106:8000'
+//   ngrok tunnel: 'https://your-ngrok-url.ngrok-free.app'
+//   Production: 'https://your-production-domain.com'
+export const API_BASE = 'http://127.0.0.1:8000'; // ⚠️ UPDATE THIS TO YOUR BACKEND URL!
 // Separate base for Google OAuth redirect handler (hosted on Vercel)
 export const OAUTH_REDIRECT_BASE = 'https://mental-health-tracker-xi.vercel.app'; // Update if Vercel domain changes
 export const API_VERSION = '/api';

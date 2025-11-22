@@ -169,11 +169,15 @@ export default function LoginScreen({ navigation, onLogin }: LoginScreenProps) {
         // Store token and user data
         if (data.token) {
           await AsyncStorage.setItem('auth_token', data.token);
+          console.log('LoginScreen: Auth token stored successfully');
+        } else {
+          console.warn('LoginScreen: No token received from backend');
         }
 
         // Store user data temporarily for login handler
         if (data.user) {
           await AsyncStorage.setItem('google_user_temp', JSON.stringify(data.user));
+          console.log('LoginScreen: Google user temp data stored');
         }
 
         // Get email from backend response or OAuth result
@@ -192,6 +196,17 @@ export default function LoginScreen({ navigation, onLogin }: LoginScreenProps) {
         });
 
         console.log('LoginScreen: Google login successful, redirecting to dashboard...');
+        
+        // Ensure API service has the token
+        try {
+          const { apiService } = await import('../services/api');
+          if (data.token) {
+            await apiService.setAuthToken(data.token);
+            console.log('LoginScreen: API service token initialized');
+          }
+        } catch (apiError) {
+          console.warn('LoginScreen: Failed to initialize API service token:', apiError);
+        }
 
       } catch (apiError: any) {
         console.error('LoginScreen: Backend Google auth failed:', apiError);

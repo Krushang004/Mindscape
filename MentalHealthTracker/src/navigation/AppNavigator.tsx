@@ -219,11 +219,24 @@ const AppNavigator = () => {
     try {
       const storedAuth = await AsyncStorage.getItem('is_authenticated');
       const storedUser = await AsyncStorage.getItem('user_auth');
+      const storedToken = await AsyncStorage.getItem('auth_token');
 
       if (storedAuth === 'true' && storedUser) {
         try {
           const user = JSON.parse(storedUser);
           console.log('Found stored authentication, auto-login:', user.email);
+          
+          // Initialize API service with stored token if available
+          if (storedToken) {
+            try {
+              const { apiService } = await import('../services/api');
+              await apiService.setAuthToken(storedToken);
+              console.log('AppNavigator: API service token initialized from storage');
+            } catch (apiError) {
+              console.warn('AppNavigator: Failed to initialize API service token:', apiError);
+            }
+          }
+          
           const userSettings = await getUserSettings();
           if (userSettings && userSettings.email === user.email) {
             const updatedUser = {
@@ -237,13 +250,15 @@ const AppNavigator = () => {
             } catch (storageError) {
               console.warn('Failed to store auth state:', storageError);
             }
+            console.log('AppNavigator: Restoring auth state - user:', updatedUser.email);
             setAuthState({ user: updatedUser, isAuthenticated: true, isLoading: false });
             return;
           }
         } catch (parseError) {
-          console.log('Failed to parse stored user data');
+          console.log('Failed to parse stored user data:', parseError);
         }
       }
+      console.log('AppNavigator: No valid auth state found, user not authenticated');
       setAuthState({ user: null, isAuthenticated: false, isLoading: false });
     } catch (error) {
       console.error('Error checking auth status:', error);
@@ -356,12 +371,39 @@ const AppNavigator = () => {
       try {
         await AsyncStorage.setItem('user_auth', JSON.stringify(user));
         await AsyncStorage.setItem('is_authenticated', 'true');
+        console.log('AppNavigator: Auth state stored in AsyncStorage');
+        
+        // Also ensure API service has the token if it exists
+        try {
+          const authToken = await AsyncStorage.getItem('auth_token');
+          if (authToken) {
+            const { apiService } = await import('../services/api');
+            await apiService.setAuthToken(authToken);
+            console.log('AppNavigator: API service token initialized');
+          }
+        } catch (apiError) {
+          console.warn('AppNavigator: Failed to initialize API service token:', apiError);
+        }
       } catch (storageError) {
         console.warn('Failed to store auth state:', storageError);
       }
 
       console.log('Login successful, setting auth state. User will be redirected to dashboard.');
+      console.log('AppNavigator: Setting auth state - user:', user.email, 'isAuthenticated: true');
+      
+      // Set auth state - this will trigger navigation update
       setAuthState({ user, isAuthenticated: true, isLoading: false });
+      
+      // Double-check that state was set correctly
+      setTimeout(() => {
+        console.log('AppNavigator: Verifying auth state after login...');
+        AsyncStorage.getItem('is_authenticated').then((auth) => {
+          console.log('AppNavigator: is_authenticated in storage:', auth);
+        });
+        AsyncStorage.getItem('user_auth').then((userData) => {
+          console.log('AppNavigator: user_auth in storage:', userData ? 'exists' : 'missing');
+        });
+      }, 100);
     } catch (error) {
       console.error('Login error:', error);
       throw error;
