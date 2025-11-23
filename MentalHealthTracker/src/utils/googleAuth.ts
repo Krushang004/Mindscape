@@ -66,6 +66,12 @@ export const useGoogleAuth = () => {
       console.log('⚠️ IMPORTANT: Make sure this EXACT redirect URI is in Google Console:');
       console.log('   Redirect URI:', redirectUri);
       console.log('   Copy this URL and add it to Google Console → Credentials → Your OAuth Client → Authorized redirect URIs');
+      console.log('');
+      console.log('📋 Configuration Check:');
+      console.log('   - API_BASE:', API_BASE);
+      console.log('   - OAUTH_REDIRECT_BASE:', OAUTH_REDIRECT_BASE);
+      console.log('   - Constructed Redirect URI:', redirectUri);
+      console.log('   - Google Client ID:', GOOGLE_CLIENT_ID.substring(0, 20) + '...');
 
       // Use WebBrowser.openBrowserAsync and handle deep link separately
       // The backend will redirect to mentalhealthtracker://auth which we'll catch via Linking

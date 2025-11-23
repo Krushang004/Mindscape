@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from .settings import GOOGLE_CLIENT_ID, APP_JWT_SECRET, GOOGLE_CLIENT_SECRET
+from .settings import GOOGLE_CLIENT_ID, APP_JWT_SECRET, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI
 
 User = get_user_model()
 
@@ -128,18 +128,26 @@ def google_oauth_redirect(request):
         # Exchange authorization code for tokens
         import requests as http_requests
         token_url = 'https://oauth2.googleapis.com/token'
-        # Use the request's absolute URI for redirect_uri
-        # This ensures it matches what was registered in Google Console
-        redirect_uri = request.build_absolute_uri('/auth/google/callback')
-        # Remove any query parameters that might have been added
-        if '?' in redirect_uri:
-            redirect_uri = redirect_uri.split('?')[0]
+        
+        # Use configured redirect URI from settings (must match what frontend sent to Google)
+        # Fallback to request.build_absolute_uri if not configured
+        if GOOGLE_REDIRECT_URI:
+            redirect_uri = GOOGLE_REDIRECT_URI
+        else:
+            # Fallback: use the request's absolute URI
+            redirect_uri = request.build_absolute_uri('/auth/google/callback')
+            # Remove any query parameters that might have been added
+            if '?' in redirect_uri:
+                redirect_uri = redirect_uri.split('?')[0]
+            print(f"⚠️ WARNING: GOOGLE_REDIRECT_URI not set in settings. Using request URI: {redirect_uri}")
+            print(f"⚠️ This may cause redirect_uri_mismatch errors if it doesn't match what the frontend sent!")
         
         # Debug logging
         print(f"OAuth Token Exchange:")
         print(f"  Redirect URI: {redirect_uri}")
         print(f"  Client ID: {GOOGLE_CLIENT_ID[:20]}..." if GOOGLE_CLIENT_ID else "  Client ID: MISSING!")
         print(f"  Client Secret: {'SET' if GOOGLE_CLIENT_SECRET else 'MISSING!'}")
+        print(f"  Authorization Code: {code[:20]}..." if code else "  Authorization Code: MISSING!")
         
         token_data = {
             'code': code,

@@ -105,6 +105,12 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')
 APP_JWT_SECRET = os.getenv('APP_JWT_SECRET', 'replace-me')
 
+# Google OAuth Redirect URI - MUST match what's registered in Google Console
+# This should be the exact same URI that the frontend sends to Google
+# For local dev: http://127.0.0.1:8000/auth/google/callback or http://YOUR_LOCAL_IP:8000/auth/google/callback
+# For production: https://your-domain.com/auth/google/callback
+GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', '')
+
 # Email configuration for OTP
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
