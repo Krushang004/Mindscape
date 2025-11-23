@@ -5,12 +5,12 @@
 //   Local dev (same network): 'http://192.168.0.106:8000'
 //   ngrok tunnel: 'https://your-ngrok-url.ngrok-free.app'
 //   Production: 'https://your-production-domain.com'
-export const API_BASE = 'http://127.0.0.1:8000'; // ⚠️ UPDATE THIS TO YOUR DJANGO BACKEND URL!
+export const API_BASE = 'http://127.0.0.1:8000/auth/google/callback'; // ⚠️ UPDATE THIS TO YOUR DJANGO BACKEND URL!
 // Separate base for Google OAuth redirect handler
 // This should point to where your /auth/google/callback endpoint is hosted
 // If using Django backend, set this to the same as API_BASE (but must be HTTPS for production)
 // If using a separate OAuth proxy (like Vercel), set it to that URL
-export const OAUTH_REDIRECT_BASE = 'http://127.0.0.1:8000'; // ⚠️ MUST MATCH WHERE /auth/google/callback IS HOSTED!
+export const OAUTH_REDIRECT_BASE = 'http://127.0.0.1:8000/auth/google/callback'; // ⚠️ MUST MATCH WHERE /auth/google/callback IS HOSTED!
 export const API_VERSION = '/api';
 export const FULL_API_BASE = `${API_BASE}${API_VERSION}`;
 
