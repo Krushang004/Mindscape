@@ -13,8 +13,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
-import { handleGoogleAuthNative, isGoogleSignInAvailable } from '../utils/googleAuthNative';
-import { useGoogleAuth, handleGoogleAuthWithFallback } from '../utils/googleAuth';
+import { useGoogleAuth, signInWithGoogle } from '../utils/firebaseAuth';
 import { API_BASE } from '../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SignupCredentials } from '../types';
@@ -33,12 +32,7 @@ export default function SignupScreen({ navigation, onSignup }: SignupScreenProps
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleSignInAvailable, setGoogleSignInAvailable] = useState(false);
-  const googleAuth = useGoogleAuth();
-
-  useEffect(() => {
-    setGoogleSignInAvailable(isGoogleSignInAvailable());
-  }, []);
+  const [request, response, promptAsync] = useGoogleAuth();
 
   const validateForm = () => {
     if (!name.trim()) {
@@ -111,34 +105,10 @@ export default function SignupScreen({ navigation, onSignup }: SignupScreenProps
   const handleGoogleSignup = async () => {
     try {
       setLoading(true);
-      console.log('SignupScreen: Starting Google signup...');
+      console.log('SignupScreen: Starting Firebase Google signup...');
 
-      let result: { idToken: string; user?: any } | null = null;
-
-      // Try native Google Sign-In first (if available)
-      if (isGoogleSignInAvailable()) {
-        console.log('SignupScreen: Attempting native Google Sign-In...');
-        try {
-          result = await handleGoogleAuthNative();
-        } catch (nativeError: any) {
-          console.log('SignupScreen: Native sign-in failed, falling back to OAuth web flow:', nativeError.message);
-          // Fall through to OAuth web flow
-        }
-      }
-
-      // Fallback to OAuth web flow if native is not available or failed
-      if (!result || !result.idToken) {
-        console.log('SignupScreen: Using OAuth web flow fallback...');
-        try {
-          result = await handleGoogleAuthWithFallback(googleAuth.request, googleAuth.promptAsync);
-        } catch (oauthError: any) {
-          console.error('SignupScreen: OAuth web flow failed:', oauthError);
-          if (oauthError.message && !oauthError.message.includes('cancelled')) {
-            Alert.alert('Google Sign-up Failed', oauthError.message || 'Failed to sign up with Google. Please try again.');
-          }
-          return;
-        }
-      }
+      // Sign in with Google using Firebase
+      const result = await signInWithGoogle(promptAsync);
 
       if (!result || !result.idToken) {
         console.log('SignupScreen: Google signup cancelled by user or no token received');
@@ -146,7 +116,7 @@ export default function SignupScreen({ navigation, onSignup }: SignupScreenProps
         return;
       }
 
-      console.log('SignupScreen: Google OAuth successful, sending to backend...');
+      console.log('SignupScreen: Firebase Google sign-in successful, sending to backend...');
 
       // Send idToken to backend for verification and user creation
       try {

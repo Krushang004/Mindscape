@@ -3,14 +3,15 @@
 // IMPORTANT: Update this to your actual Django backend URL before building the APK!
 // Examples:
 //   Local dev (same network): 'http://192.168.0.106:8000'
-//   ngrok tunnel: 'https://your-ngrok-url.ngrok-free.app'
+//   Local dev (localhost): 'http://127.0.0.1:8000'
 //   Production: 'https://your-production-domain.com'
-export const API_BASE = 'http://127.0.0.1:8000'; // ⚠️ UPDATE THIS TO YOUR DJANGO BACKEND URL!
+// 
+// Currently using Vercel deployment for both API and OAuth
+export const API_BASE = 'https://server-coral-ten.vercel.app'; // Vercel deployment
 // Separate base for Google OAuth redirect handler
-// This should point to where your /auth/google/callback endpoint is hosted
-// If using Django backend, set this to the same as API_BASE (but must be HTTPS for production)
-// If using a separate OAuth proxy (like Vercel), set it to that URL
-export const OAUTH_REDIRECT_BASE = 'http://127.0.0.1:8000'; // ⚠️ MUST MATCH WHERE /auth/google/callback IS HOSTED!
+// This should point to your Vercel deployment URL where /auth/google/callback is hosted
+// Vercel provides HTTPS automatically, which is required by Google OAuth
+export const OAUTH_REDIRECT_BASE = 'https://server-coral-ten.vercel.app'; // Vercel OAuth server
 export const API_VERSION = '/api';
 export const FULL_API_BASE = `${API_BASE}${API_VERSION}`;
 
@@ -33,7 +34,7 @@ export const STORAGE_KEYS = {
 export const API_ENDPOINTS = {
   // Auth
   GOOGLE_AUTH: '/auth/google',
-  
+
   // Users
   USERS: '/users',
   USER_PROFILE: '/users/profile',
@@ -41,29 +42,29 @@ export const API_ENDPOINTS = {
   REQUEST_PASSWORD_RESET_OTP: '/users/request_password_reset_otp',
   VERIFY_PASSWORD_RESET_OTP: '/users/verify_password_reset_otp',
   RESET_PASSWORD: '/users/reset_password',
-  
+
   // Moods
   MOODS: '/moods',
-  
+
   // Activities
   ACTIVITIES: '/activities',
   ACTIVITIES_BY_CATEGORY: '/activities/by_category',
-  
+
   // Goals
   GOALS: '/goals',
   GOAL_PROGRESS: (id: string) => `/goals/${id}/update_progress`,
-  
+
   // Daily Entries
   DAILY_ENTRIES: '/daily-entries',
   TODAY_ENTRY: '/daily-entries/today',
   ENTRY_BY_DATE: '/daily-entries/by_date',
   RECENT_ENTRIES: '/daily-entries/recent',
-  
+
   // Mood Logs
   MOOD_LOGS: '/mood-logs',
   TODAY_MOOD_LOGS: '/mood-logs/today',
   MOOD_LOGS_BY_DATE_RANGE: '/mood-logs/by_date_range',
-  
+
   // Suggestions
   SUGGESTIONS: '/suggestions',
   MARK_SUGGESTION_READ: (id: string) => `/suggestions/${id}/mark_as_read`,

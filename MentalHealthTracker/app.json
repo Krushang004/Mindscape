@@ -54,6 +54,10 @@
           "autoVerify": true,
           "data": [
             {
+              "scheme": "mentalhealthtracker",
+              "host": "auth-success"
+            },
+            {
               "scheme": "mentalhealthtracker"
             }
           ],
@@ -72,7 +76,8 @@
     "extra": {
       "eas": {
         "projectId": "ee3a4ac8-6fdd-43d2-af51-9fe93ed8fa5f"
-      }
+      },
+      "firebaseApiKey": "AIzaSyDIXqheUfH6HeCeMBBg1giJroJDinhOFXg"
     },
     "plugins": [
       [
@@ -98,9 +103,6 @@
         }
       ]
     ],
-    "developmentClient": {
-      "silentLaunch": true
-    },
     "owner": "krushang_04"
   }
 }
