@@ -1,0 +1,11 @@
+# Ignore files that shouldn't be deployed to Vercel
+MentalHealthTracker/
+backend_django/
+node_modules/
+*.md
+Screenshots/
+*.jpg
+*.png
+.env
+.env.local
+

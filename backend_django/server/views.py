@@ -7,7 +7,35 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from .settings import GOOGLE_CLIENT_ID, APP_JWT_SECRET, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI
+import firebase_admin
+from firebase_admin import credentials, auth as firebase_auth
+from .settings import GOOGLE_CLIENT_ID, APP_JWT_SECRET, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, APP_DEEP_LINK
+
+# Disable Google Cloud metadata service lookup (prevents ENOTFOUND errors on non-GCP platforms)
+# This prevents the Google Auth library from trying to auto-detect project ID via metadata.google.internal
+if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+    del os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+if 'GOOGLE_CLOUD_PROJECT' in os.environ:
+    del os.environ['GOOGLE_CLOUD_PROJECT']
+if 'GCLOUD_PROJECT' in os.environ:
+    del os.environ['GCLOUD_PROJECT']
+
+# Initialize Firebase Admin (only once)
+# IMPORTANT: Never call initialize_app() without credentials - it tries to use ADC
+# which attempts to access metadata.google.internal (only available on GCP)
+if not firebase_admin._apps:
+    # Try to use service account from environment variable or file
+    firebase_cred_path = os.getenv('FIREBASE_CREDENTIALS_PATH')
+    if firebase_cred_path and os.path.exists(firebase_cred_path):
+        cred = credentials.Certificate(firebase_cred_path)
+        firebase_admin.initialize_app(cred)
+        print("Firebase Admin initialized with service account credentials")
+    else:
+        # DO NOT call initialize_app() without credentials - it will try ADC and crash
+        # Firebase token verification will fall back to Google OAuth verification
+        print("Warning: Firebase Admin not initialized - no credentials provided")
+        print("Firebase token verification will fall back to Google OAuth verification")
+        print("To enable Firebase Admin, set FIREBASE_CREDENTIALS_PATH environment variable")
 
 User = get_user_model()
 
@@ -21,15 +49,75 @@ def google_auth(request):
         if not id_token_str:
             return JsonResponse({'message': 'Missing idToken'}, status=400)
 
-        payload = id_token.verify_oauth2_token(id_token_str, requests.Request(), GOOGLE_CLIENT_ID)
-        # Validate required fields
-        if not payload.get('email_verified'):
-            return JsonResponse({'message': 'Unverified Google account'}, status=401)
+        # Try Firebase token verification first
+        firebase_uid = None
+        email = None
+        name = None
+        picture = None
+        email_verified = False
+        firebase_error_msg = None  # Store error message for later use
 
-        google_id = payload['sub']
-        email = payload['email']
-        name = payload.get('name', '')
-        picture = payload.get('picture', '')
+        # Only try Firebase verification if Firebase Admin is initialized
+        if firebase_admin._apps:
+            try:
+                # Verify Firebase ID token
+                decoded_token = firebase_auth.verify_id_token(id_token_str)
+                firebase_uid = decoded_token['uid']
+                email = decoded_token.get('email')
+                name = decoded_token.get('name') or decoded_token.get('display_name', '')
+                picture = decoded_token.get('picture')
+                email_verified = decoded_token.get('email_verified', False)
+                
+                print(f"Firebase token verified: uid={firebase_uid}, email={email}")
+            except Exception as firebase_error:
+                firebase_error_msg = str(firebase_error)  # Save error message
+                print(f"Firebase verification failed, trying Google OAuth: {firebase_error}")
+                # Fall through to Google OAuth verification
+                firebase_uid = None
+        else:
+            # Firebase Admin not initialized, skip Firebase verification
+            firebase_uid = None
+        
+        if not firebase_uid:
+            # Use Google OAuth verification (Firebase Admin not available or failed)
+            try:
+                # Create a Request object that doesn't use ADC
+                # This prevents the library from trying to access metadata.google.internal
+                request_obj = requests.Request()
+                
+                # Verify the OAuth token with explicit client ID
+                # This should not trigger ADC lookup
+                payload = id_token.verify_oauth2_token(
+                    id_token_str, 
+                    request_obj, 
+                    GOOGLE_CLIENT_ID,
+                    clock_skew_in_seconds=10
+                )
+                firebase_uid = payload['sub']  # Use Google ID as firebase_uid
+                email = payload['email']
+                name = payload.get('name', '')
+                picture = payload.get('picture', '')
+                email_verified = payload.get('email_verified', False)
+                print(f"Google OAuth token verified: email={email}")
+            except Exception as google_error:
+                error_msg = str(google_error)
+                # If error is about metadata service, provide more helpful message
+                if 'metadata.google.internal' in error_msg or 'ENOTFOUND' in error_msg:
+                    error_msg = 'Token verification failed: Google Auth library tried to access GCP metadata service. This should not happen with OAuth token verification.'
+                    print(f"Google OAuth verification error (metadata service issue): {error_msg}")
+                return JsonResponse({
+                    'message': 'Invalid token',
+                    'error': f'Firebase: {firebase_error_msg if firebase_error_msg else "N/A"}, Google: {error_msg}'
+                }, status=401)
+
+        # Validate required fields
+        if not email_verified:
+            return JsonResponse({'message': 'Unverified email account'}, status=401)
+
+        if not email:
+            return JsonResponse({'message': 'Email not found in token'}, status=401)
+
+        google_id = firebase_uid  # Use Firebase UID as Google ID for compatibility
         
         # Get or create user
         try:
@@ -109,10 +197,12 @@ def google_oauth_redirect(request):
         code = request.GET.get('code')
         error = request.GET.get('error')
         
+        deep_link_base = (APP_DEEP_LINK or 'mentalhealthtracker://auth').rstrip('/')
+        
         if error:
             error_description = request.GET.get('error_description', error)
             # Redirect to app with error using custom URL scheme
-            app_redirect = f"mentalhealthtracker://auth?error={urllib.parse.quote(error_description)}"
+            app_redirect = f"{deep_link_base}?error={urllib.parse.quote(error_description)}"
             # Use HttpResponse with Location header to allow custom URL scheme
             response = HttpResponse(status=302)
             response['Location'] = app_redirect
@@ -120,7 +210,7 @@ def google_oauth_redirect(request):
         
         if not code:
             # Redirect to app with error
-            app_redirect = "mentalhealthtracker://auth?error=No authorization code received"
+            app_redirect = f"{deep_link_base}?error=No authorization code received"
             response = HttpResponse(status=302)
             response['Location'] = app_redirect
             return response
@@ -173,7 +263,7 @@ def google_oauth_redirect(request):
         id_token_str = tokens.get('id_token')
         
         if not id_token_str:
-            app_redirect = "mentalhealthtracker://auth?error=No ID token received"
+            app_redirect = f"{deep_link_base}?error=No ID token received"
             response = HttpResponse(status=302)
             response['Location'] = app_redirect
             return response
@@ -188,7 +278,7 @@ def google_oauth_redirect(request):
         
         # Build redirect URL with fragment
         query_string = '&'.join([f"{k}={urllib.parse.quote(str(v))}" for k, v in params.items()])
-        app_redirect = f"mentalhealthtracker://auth#{query_string}"
+        app_redirect = f"{deep_link_base}#{query_string}"
         
         # Use HttpResponse with Location header to allow custom URL scheme
         # Django's HttpResponseRedirect blocks custom schemes, so we use HttpResponse directly
@@ -200,7 +290,8 @@ def google_oauth_redirect(request):
         import traceback
         print(f"OAuth redirect error: {traceback.format_exc()}")
         error_msg = urllib.parse.quote(str(e))
-        app_redirect = f"mentalhealthtracker://auth?error={error_msg}"
+        deep_link_base = (APP_DEEP_LINK or 'mentalhealthtracker://auth').rstrip('/')
+        app_redirect = f"{deep_link_base}?error={error_msg}"
         response = HttpResponse(status=302)
         response['Location'] = app_redirect
         return response

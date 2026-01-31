@@ -104,6 +104,7 @@ CORS_ALLOWED_HEADERS = [
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')
 APP_JWT_SECRET = os.getenv('APP_JWT_SECRET', 'replace-me')
+APP_DEEP_LINK = os.getenv('APP_DEEP_LINK', 'mentalhealthtracker://auth')
 
 # Google OAuth Redirect URI - MUST match what's registered in Google Console
 # This should be the exact same URI that the frontend sends to Google

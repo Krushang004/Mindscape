@@ -8,9 +8,31 @@
   ],
   "routes": [
     {
+      "src": "/auth/google/callback",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/auth/google",
+      "methods": [
+        "POST"
+      ],
+      "dest": "/api/auth/google.js"
+    },
+    {
+      "src": "/api/users/profile",
+      "dest": "/api/users/profile.js"
+    },
+    {
+      "src": "/healthz",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/",
+      "dest": "/server.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "/server.js"
     }
   ]
 }
-

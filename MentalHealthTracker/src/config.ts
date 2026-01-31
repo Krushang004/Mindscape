@@ -6,8 +6,8 @@
 //   Local dev (localhost): 'http://127.0.0.1:8000'
 //   Production: 'https://your-production-domain.com'
 // 
-// Currently using Vercel deployment for both API and OAuth
-export const API_BASE = 'https://server-coral-ten.vercel.app'; // Vercel deployment
+// Currently using local Django backend on WiFi network
+export const API_BASE = 'http://192.168.0.107:8000'; // Local Django backend on WiFi
 // Separate base for Google OAuth redirect handler
 // This should point to your Vercel deployment URL where /auth/google/callback is hosted
 // Vercel provides HTTPS automatically, which is required by Google OAuth
