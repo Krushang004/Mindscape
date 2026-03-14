@@ -90,6 +90,8 @@ export interface UserSettings {
   updatedAt: string;
 }
 
+export type Theme = 'light' | 'dark' | 'auto';
+
 export interface MoodEmoji {
   emoji: string;
   mood: string;

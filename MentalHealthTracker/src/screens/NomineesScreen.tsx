@@ -216,14 +216,16 @@ const NomineesScreen = () => {
     },
     infoCard: {
       backgroundColor: colors.surface,
-      borderRadius: 15,
+      borderRadius: 16,
       padding: 20,
       marginBottom: 20,
       elevation: 2,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
+      borderWidth: 1,
+      borderColor: colors.border,
+      shadowColor: 'rgba(76, 111, 255, 0.15)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
     },
     infoTitle: {
       fontSize: 18,
@@ -237,35 +239,37 @@ const NomineesScreen = () => {
       lineHeight: 20,
     },
     addButton: {
-      backgroundColor: '#ffffff',
+      backgroundColor: 'rgba(76, 111, 255, 0.05)',
       borderRadius: 25,
       paddingVertical: 15,
       paddingHorizontal: 30,
       alignItems: 'center',
       marginBottom: 20,
-      elevation: 3,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: colors.primary,
+      elevation: 2,
+      shadowColor: 'rgba(76, 111, 255, 0.15)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
     },
     addButtonText: {
-      color: '#000000',
+      color: colors.primary,
       fontSize: 16,
       fontWeight: 'bold',
     },
     nomineeCard: {
-      backgroundColor: colors.card,
-      borderRadius: 15,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
       padding: 20,
       marginBottom: 15,
       elevation: 2,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
+      borderWidth: 1,
+      borderColor: colors.border,
+      shadowColor: 'rgba(76, 111, 255, 0.15)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
     },
     nomineeHeader: {
       flexDirection: 'row',
@@ -286,12 +290,10 @@ const NomineesScreen = () => {
       overflow: 'hidden',
     },
     statusActive: {
-      backgroundColor: '#ffffff',
-      color: '#000000',
+      backgroundColor: 'rgba(76, 111, 255, 0.15)',
     },
     statusInactive: {
-      backgroundColor: '#666666',
-      color: '#ffffff',
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
     nomineeDetails: {
       marginBottom: 10,
@@ -348,11 +350,18 @@ const NomineesScreen = () => {
        paddingVertical: 20,
      },
      modalContent: {
-       backgroundColor: colors.background,
-       borderRadius: 15,
+       backgroundColor: colors.surface,
+       borderRadius: 16,
        padding: 20,
        width: '90%',
        maxWidth: 400,
+       borderWidth: 1,
+       borderColor: colors.border,
+       shadowColor: 'rgba(76, 111, 255, 0.15)',
+       shadowOffset: { width: 0, height: 2 },
+       shadowOpacity: 0.6,
+       shadowRadius: 4,
+       elevation: 5,
      },
     modalHeader: {
       flexDirection: 'row',
@@ -396,24 +405,24 @@ const NomineesScreen = () => {
      verifyButton: {
        flexDirection: 'row',
        alignItems: 'center',
-       backgroundColor: '#ffffff',
+       backgroundColor: 'rgba(76, 111, 255, 0.15)',
        paddingHorizontal: 12,
        paddingVertical: 8,
        borderRadius: 8,
        gap: 4,
        borderWidth: 1,
-       borderColor: colors.border,
+       borderColor: colors.primary,
      },
      verifiedButton: {
-       backgroundColor: '#ffffff',
-       borderColor: '#ffffff',
+       backgroundColor: 'rgba(76, 111, 255, 0.15)',
+       borderColor: colors.primary,
      },
      verifyingButton: {
        backgroundColor: '#666666',
        borderColor: '#666666',
      },
      verifyButtonText: {
-       color: '#000000',
+       color: colors.primary,
        fontSize: 12,
        fontWeight: '600',
      },
@@ -514,7 +523,7 @@ const NomineesScreen = () => {
                   onPress={() => toggleNomineeStatus(nominee)}
                 >
                   <Text style={{ 
-                    color: nominee.isActive ? '#000000' : '#ffffff', 
+                    color: nominee.isActive ? colors.primary : colors.textSecondary, 
                     fontSize: 12,
                     fontWeight: nominee.isActive ? 'bold' : 'normal'
                   }}>
@@ -643,7 +652,7 @@ const NomineesScreen = () => {
                                              <Text style={[
                                                styles.verifyButtonText,
                                                isVerifyingEmail && { color: '#ffffff' },
-                                               verifiedEmail === email.trim() && { color: '#000000', fontWeight: 'bold' }
+                                               verifiedEmail === email.trim() && { color: colors.primary, fontWeight: 'bold' }
                                              ]}>
                {isVerifyingEmail ? 'Verifying...' :
                verifiedEmail === email.trim() ? 'Verified' : 'Verify'}

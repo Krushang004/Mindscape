@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   FlatList,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -80,7 +81,7 @@ export default function SuggestionsScreen({ navigation }: SuggestionsScreenProps
   const renderSuggestionCard = (title: string, items: string[], icon: string) => (
     <View style={[styles.suggestionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={styles.cardHeader}>
-        <Text style={[styles.cardIcon, { color: colors.primary }]}>{icon}</Text>
+        <Ionicons name={icon as any} size={24} color={colors.primary} style={styles.cardIcon} />
         <Text style={[styles.cardTitle, { color: colors.text }]}>{title}</Text>
       </View>
       {items.map((item, index) => (
@@ -184,7 +185,11 @@ export default function SuggestionsScreen({ navigation }: SuggestionsScreenProps
         style={styles.header}
       >
         <View style={styles.logoContainer}>
-          <Text style={styles.logoEmoji}>🧠</Text>
+          <Image 
+            source={require('../../assets/icon.png')} 
+            style={styles.logoImage} 
+            resizeMode="contain" 
+          />
           <Text style={styles.headerTitle}>Mood Suggestions</Text>
           <Text style={styles.headerSubtitle}>Personalized recommendations for you</Text>
         </View>
@@ -210,9 +215,9 @@ export default function SuggestionsScreen({ navigation }: SuggestionsScreenProps
         </View>
 
         {/* Suggestions */}
-        {renderSuggestionCard('Suggestions', currentSuggestion.suggestions, '💡')}
-        {renderSuggestionCard('Activities', currentSuggestion.activities, '🎯')}
-        {renderSuggestionCard('Affirmations', currentSuggestion.affirmations, '✨')}
+        {renderSuggestionCard('Suggestions', currentSuggestion.suggestions, 'bulb-outline')}
+        {renderSuggestionCard('Activities', currentSuggestion.activities, 'fitness-outline')}
+        {renderSuggestionCard('Affirmations', currentSuggestion.affirmations, 'sparkles-outline')}
 
         {/* Quick Actions */}
         {renderQuickActions()}
@@ -249,9 +254,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoEmoji: {
-    fontSize: 48,
+  logoImage: {
+    width: 64,
+    height: 64,
     marginBottom: 10,
+    borderRadius: 16,
   },
   headerTitle: {
     fontSize: 28,
@@ -272,14 +279,14 @@ const styles = StyleSheet.create({
   },
   moodSection: {
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     marginBottom: 20,
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.6,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   sectionTitle: {
     fontSize: 18,
@@ -307,14 +314,14 @@ const styles = StyleSheet.create({
   },
   suggestionCard: {
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     marginBottom: 20,
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.6,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -322,7 +329,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   cardIcon: {
-    fontSize: 24,
     marginRight: 10,
   },
   cardTitle: {
@@ -346,14 +352,14 @@ const styles = StyleSheet.create({
   },
   quickActionsContainer: {
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     marginBottom: 20,
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.6,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   quickActionsGrid: {
     flexDirection: 'row',
@@ -363,7 +369,7 @@ const styles = StyleSheet.create({
   quickAction: {
     width: '48%',
     padding: 15,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
     marginBottom: 10,
   },
@@ -381,14 +387,14 @@ const styles = StyleSheet.create({
   },
   activityCard: {
     padding: 15,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     marginBottom: 10,
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.6,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   activityHeader: {
     flexDirection: 'row',

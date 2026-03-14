@@ -9,48 +9,48 @@ interface ThemeContextType {
 
 // Black and white dark mode colors only
 const darkColors = {
-  // Background colors - black shades
-  background: '#000000',
-  surface: '#1a1a1a',
-  card: '#2a2a2a',
+  // Background colors - dark theme
+  background: '#0F1117',
+  surface: '#1B1F2A',
+  card: '#1B1F2A',
   
-  // Text colors - white shades
-  text: '#ffffff',
-  textSecondary: '#cccccc',
-  textTertiary: '#999999',
+  // Text colors
+  text: '#FFFFFF',
+  textSecondary: '#9AA4C7',
+  textTertiary: '#667399',
   
-  // Primary colors - white for buttons/accents
-  primary: '#ffffff',
-  primaryLight: '#ffffff',
-  primaryDark: '#cccccc',
+  // Primary colors - blue glow accent
+  primary: '#4C6FFF',
+  primaryLight: '#7A8CFF',
+  primaryDark: '#2E49C2',
   
-  // Secondary colors - gray shades
-  secondary: '#666666',
-  secondaryLight: '#888888',
-  secondaryDark: '#444444',
+  // Secondary colors
+  secondary: '#2A2F3C',
+  secondaryLight: '#3A4259',
+  secondaryDark: '#1A1D26',
   
-  // Status colors - grayscale
-  success: '#ffffff',
-  warning: '#cccccc',
-  error: '#999999',
-  info: '#ffffff',
+  // Status colors
+  success: '#4CAF50',
+  warning: '#FFC107',
+  error: '#FF5252',
+  info: '#4C6FFF',
   
   // Border and divider colors
-  border: '#333333',
-  divider: '#2a2a2a',
+  border: '#2A2F3C',
+  divider: '#2A2F3C',
   
   // Shadow colors
-  shadow: 'rgba(0, 0, 0, 0.5)',
+  shadow: 'rgba(76, 111, 255, 0.15)',
   
-  // Gradient colors - black to dark gray
-  gradientStart: '#1a1a1a',
-  gradientEnd: '#000000',
+  // Gradient colors
+  gradientStart: '#1B1F2A',
+  gradientEnd: '#0F1117',
   
   // Switch colors
-  switchTrack: '#333333',
-  switchThumb: '#ffffff',
-  switchActiveTrack: '#ffffff',
-  switchActiveThumb: '#000000',
+  switchTrack: '#2A2F3C',
+  switchThumb: '#9AA4C7',
+  switchActiveTrack: '#2E49C2',
+  switchActiveThumb: '#4C6FFF',
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

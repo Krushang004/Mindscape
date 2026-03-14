@@ -243,8 +243,8 @@ const DailyEntryScreen = () => {
     moodButton: {
       width: '30%',
       aspectRatio: 1,
-      backgroundColor: colors.card,
-      borderRadius: 15,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
       justifyContent: 'center',
       alignItems: 'center',
       marginBottom: 10,
@@ -252,15 +252,18 @@ const DailyEntryScreen = () => {
       borderColor: colors.border,
       elevation: 2,
       shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
     },
     moodButtonSelected: {
-      elevation: 4,
-      shadowOpacity: 0.2,
-      backgroundColor: '#ffffff',
-      borderColor: '#ffffff',
+      elevation: 6,
+      shadowColor: colors.primary,
+      shadowOpacity: 0.6,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 0 },
+      backgroundColor: 'rgba(76, 111, 255, 0.15)',
+      borderColor: colors.primary,
       transform: [{ scale: 1.04 }],
     },
     moodEmoji: {
@@ -277,37 +280,31 @@ const DailyEntryScreen = () => {
       textAlign: 'center',
     },
     moodLabelSelected: {
-      color: '#000000',
+      color: colors.primary,
       fontWeight: 'bold',
     },
     summaryInput: {
-      backgroundColor: colors.card,
-      borderRadius: 10,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
       padding: 15,
       fontSize: 16,
       minHeight: 50,
       textAlignVertical: 'top',
       color: colors.text,
-      elevation: 2,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
+      borderWidth: 1,
+      borderColor: colors.border,
     },
     journalInput: {
-      backgroundColor: colors.card,
-      borderRadius: 10,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
       padding: 15,
       fontSize: 16,
       minHeight: 120,
       maxHeight: 200,
       textAlignVertical: 'top',
       color: colors.text,
-      elevation: 2,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
+      borderWidth: 1,
+      borderColor: colors.border,
     },
     activitiesGrid: {
       flexDirection: 'row',
@@ -315,7 +312,7 @@ const DailyEntryScreen = () => {
       gap: 10,
     },
     activityButton: {
-      backgroundColor: colors.card,
+      backgroundColor: colors.surface,
       paddingHorizontal: 15,
       paddingVertical: 8,
       borderRadius: 20,
@@ -323,15 +320,15 @@ const DailyEntryScreen = () => {
       borderColor: colors.border,
     },
     activityButtonSelected: {
-      backgroundColor: '#ffffff',
-      borderColor: '#ffffff',
+      backgroundColor: 'rgba(76, 111, 255, 0.15)',
+      borderColor: colors.primary,
     },
     activityText: {
       fontSize: 14,
       color: colors.textSecondary,
     },
     activityTextSelected: {
-      color: '#000000',
+      color: colors.primary,
       fontWeight: 'bold',
     },
     metricsRow: {
@@ -349,16 +346,13 @@ const DailyEntryScreen = () => {
       marginBottom: 5,
     },
     input: {
-      backgroundColor: colors.card,
-      borderRadius: 8,
+      backgroundColor: colors.surface,
+      borderRadius: 12,
       padding: 12,
       fontSize: 16,
       color: colors.text,
-      elevation: 1,
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 1,
+      borderWidth: 1,
+      borderColor: colors.border,
     },
     suggestionsContainer: {
       backgroundColor: colors.surface,
@@ -398,7 +392,7 @@ const DailyEntryScreen = () => {
       borderRadius: 25,
     },
     saveButtonText: {
-      color: colors.primary,
+      color: '#FFFFFF',
       fontSize: 16,
       fontWeight: 'bold',
       marginLeft: 8,
@@ -614,10 +608,12 @@ const DailyEntryScreen = () => {
             disabled={!selectedMood || !summary.trim() || isLoading}
           >
             <LinearGradient
-              colors={[colors.gradientStart, colors.gradientEnd]}
+              colors={['#4C6FFF', '#7A8CFF']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
               style={styles.saveButtonGradient}
             >
-              <Ionicons name="save" size={20} color={colors.primary} />
+              <Ionicons name="save" size={20} color="#FFFFFF" />
               <Text style={styles.saveButtonText}>
                 {isLoading ? 'Saving...' : 'Save Today\'s Entry'}
               </Text>

@@ -141,8 +141,8 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
       style={[
         styles.filterButton,
         {
-          backgroundColor: selectedFilter === filter ? '#ffffff' : colors.surface,
-          borderColor: colors.border,
+          backgroundColor: selectedFilter === filter ? colors.primary : colors.surface,
+          borderColor: selectedFilter === filter ? colors.primary : colors.border,
         },
       ]}
       onPress={() => setSelectedFilter(filter)}
@@ -150,7 +150,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
       <Text
         style={[
           styles.filterButtonText,
-          { color: selectedFilter === filter ? '#000000' : colors.text, fontWeight: selectedFilter === filter ? 'bold' : 'normal' },
+          { color: selectedFilter === filter ? '#ffffff' : colors.text, fontWeight: selectedFilter === filter ? 'bold' : 'normal' },
         ]}
       >
         {label}
@@ -575,9 +575,9 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderWidth: 1,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.4,
     shadowRadius: 2,
     elevation: 2,
   },
@@ -591,13 +591,13 @@ const styles = StyleSheet.create({
   entryCard: {
     marginBottom: 15,
     padding: 18,
-    borderRadius: 15,
+    borderRadius: 16,
     borderWidth: 1,
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.6,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
     marginHorizontal: 20,
   },
   entryHeader: {
@@ -718,9 +718,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     minWidth: 140,
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.4,
     shadowRadius: 2,
     elevation: 2,
   },
@@ -750,14 +750,14 @@ const styles = StyleSheet.create({
   statCard: {
     width: '48%',
     padding: 18,
-    borderRadius: 15,
+    borderRadius: 16,
     borderWidth: 1,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.6,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   statValue: {
     fontSize: 28,
@@ -772,13 +772,13 @@ const styles = StyleSheet.create({
   moodDistributionContainer: {
     marginTop: 20,
     padding: 20,
-    borderRadius: 15,
+    borderRadius: 16,
     borderWidth: 1,
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.6,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   distributionTitle: {
     fontSize: 18,
@@ -840,13 +840,13 @@ const styles = StyleSheet.create({
   trendsContainer: {
     marginTop: 20,
     padding: 20,
-    borderRadius: 15,
+    borderRadius: 16,
     borderWidth: 1,
-    shadowColor: '#000',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.6,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   trendsTitle: {
     fontSize: 18,
@@ -866,10 +866,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.02)',
-    shadowColor: '#000',
+    backgroundColor: 'rgba(76, 111, 255, 0.05)',
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.4,
     shadowRadius: 2,
     elevation: 1,
   },

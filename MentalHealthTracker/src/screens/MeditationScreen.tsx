@@ -168,7 +168,7 @@ const MeditationScreen = () => {
     if (selectedSession) {
       const completedSession = {
         ...selectedSession,
-        moodBefore,
+        moodBefore: moodBefore !== null ? moodBefore : undefined,
         moodAfter: mood,
         completedAt: new Date().toISOString(),
       };
@@ -297,14 +297,16 @@ const MeditationScreen = () => {
     },
     sessionCard: {
       width: (width - 60) / 2,
-      backgroundColor: colors.card,
-      borderRadius: 15,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
       padding: 15,
       marginBottom: 15,
-      elevation: 3,
-      shadowColor: '#000',
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: colors.border,
+      shadowColor: 'rgba(76, 111, 255, 0.15)',
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
+      shadowOpacity: 0.6,
       shadowRadius: 4,
     },
     sessionIcon: {
@@ -341,10 +343,14 @@ const MeditationScreen = () => {
       width: 200,
       height: 200,
       borderRadius: 100,
-      backgroundColor: colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
       marginBottom: 40,
+      shadowColor: '#4C6FFF',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.7,
+      shadowRadius: 20,
+      elevation: 10,
     },
     breathingText: {
       fontSize: 18,
@@ -373,11 +379,11 @@ const MeditationScreen = () => {
       backgroundColor: colors.primary,
       paddingHorizontal: 30,
       paddingVertical: 15,
-      borderRadius: 25,
-      elevation: 3,
-      shadowColor: '#000',
+      borderRadius: 20,
+      elevation: 2,
+      shadowColor: 'rgba(76, 111, 255, 0.15)',
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
+      shadowOpacity: 0.6,
       shadowRadius: 4,
     },
     controlButtonText: {
@@ -402,6 +408,13 @@ const MeditationScreen = () => {
       padding: 30,
       width: '90%',
       maxWidth: 400,
+      borderWidth: 1,
+      borderColor: colors.border,
+      shadowColor: 'rgba(76, 111, 255, 0.15)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 5,
     },
     moodModalTitle: {
       fontSize: 20,
@@ -429,9 +442,9 @@ const MeditationScreen = () => {
       justifyContent: 'center',
       alignItems: 'center',
       elevation: 2,
-      shadowColor: '#000',
+      shadowColor: 'rgba(76, 111, 255, 0.15)',
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
+      shadowOpacity: 0.4,
       shadowRadius: 2,
     },
     moodButtonText: {
@@ -474,6 +487,7 @@ const MeditationScreen = () => {
                   },
                 ]}
               >
+                <LinearGradient colors={['#4C6FFF', '#7A8CFF']} style={[StyleSheet.absoluteFill, { borderRadius: 100 }]} />
                 <Text style={styles.breathingText}>
                   {currentStep < selectedSession.instructions.length
                     ? 'Breathe In'
@@ -502,7 +516,7 @@ const MeditationScreen = () => {
                 <Ionicons
                   name={getSessionIcon(selectedSession.type) as any}
                   size={60}
-                  color={getSessionColor(selectedSession.type)}
+                  color={colors.primary}
                 />
               </View>
               

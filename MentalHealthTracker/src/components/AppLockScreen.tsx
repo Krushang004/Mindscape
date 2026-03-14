@@ -146,8 +146,8 @@ export default function AppLockScreen({
             style={[
               styles.pinDot,
               {
-                backgroundColor: index < currentPin.length ? colors.primary : colors.border,
-                borderColor: colors.border,
+                backgroundColor: index < currentPin.length ? colors.primary : 'transparent',
+                borderColor: index < currentPin.length ? colors.primary : colors.border,
               },
             ]}
           />
@@ -280,6 +280,11 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     borderWidth: 2,
+    shadowColor: 'rgba(76, 111, 255, 0.5)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 2,
   },
   errorText: {
     fontSize: 14,
@@ -303,10 +308,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
+    elevation: 2,
+    shadowColor: 'rgba(76, 111, 255, 0.15)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
   },
   keypadButtonText: {
     fontSize: 24,
     fontWeight: '600',
   },
 });
-

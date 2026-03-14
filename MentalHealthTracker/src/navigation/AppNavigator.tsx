@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,7 +26,7 @@ import MeditationScreen from '../screens/MeditationScreen';
 import HabitTrackerScreen from '../screens/HabitTrackerScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import AssessmentsScreen from '../screens/AssessmentsScreen';
-import { AuthState, LoginCredentials, SignupCredentials } from '../types';
+import { AuthState, LoginCredentials, SignupCredentials, Theme } from '../types';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -81,6 +81,16 @@ const DashboardStack = () => (
       component={AnalyticsScreen}
       options={{ title: 'Analytics & Insights' }}
     />
+    <Stack.Screen
+      name="Assessments"
+      component={AssessmentsScreen}
+      options={{ title: 'Assessments' }}
+    />
+    <Stack.Screen
+      name="Trusted Contacts"
+      component={NomineesScreen}
+      options={{ title: 'Trusted Contacts' }}
+    />
   </Stack.Navigator>
 );
 
@@ -117,12 +127,10 @@ const MainTabs = ({ onLogout }: { onLogout: () => void }) => {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'History') {
             iconName = focused ? 'calendar' : 'calendar-outline';
+          } else if (route.name === 'Add Entry') {
+            iconName = focused ? 'add-circle' : 'add-circle-outline';
           } else if (route.name === 'Suggestions') {
             iconName = focused ? 'bulb' : 'bulb-outline';
-          } else if (route.name === 'Assessments') {
-            iconName = focused ? 'clipboard' : 'clipboard-outline';
-          } else if (route.name === 'Trusted Contacts') {
-            iconName = focused ? 'people' : 'people-outline';
           } else if (route.name === 'Settings') {
             iconName = focused ? 'settings' : 'settings-outline';
           } else {
@@ -171,24 +179,17 @@ const MainTabs = ({ onLogout }: { onLogout: () => void }) => {
         }}
       />
       <Tab.Screen
+        name="Add Entry"
+        component={DailyEntryScreen}
+        options={{
+          title: 'Add Entry',
+        }}
+      />
+      <Tab.Screen
         name="Suggestions"
         component={SuggestionsScreen}
         options={{
           title: 'Mood Boosters',
-        }}
-      />
-      <Tab.Screen
-        name="Assessments"
-        component={AssessmentsScreen}
-        options={{
-          title: 'Assessments',
-        }}
-      />
-      <Tab.Screen
-        name="Trusted Contacts"
-        component={NomineesScreen}
-        options={{
-          title: 'Trusted Contacts',
         }}
       />
       <Tab.Screen
@@ -204,11 +205,25 @@ const MainTabs = ({ onLogout }: { onLogout: () => void }) => {
 };
 
 const AppNavigator = () => {
+  const { colors } = useTheme();
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     isAuthenticated: false,
     isLoading: true,
   });
+
+  const navigationTheme = {
+    ...DarkTheme,
+    colors: {
+      ...DarkTheme.colors,
+      primary: colors.primary,
+      background: colors.background,
+      card: colors.surface,
+      text: colors.text,
+      border: colors.border,
+      notification: colors.primary,
+    },
+  };
 
   useEffect(() => {
     ensureNotificationPermissions();
@@ -487,8 +502,8 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <NavigationContainer theme={navigationTheme}>
+      <Stack.Navigator screenOptions={{ headerShown: false, cardStyle: { backgroundColor: colors.background } }}>
         {authState.isAuthenticated ? (
           <Stack.Screen name="MainApp">
             {(props) => <MainTabs {...props} onLogout={handleLogout} />}

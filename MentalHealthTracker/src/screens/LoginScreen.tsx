@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -210,8 +211,12 @@ export default function LoginScreen({ navigation, onLogin }: LoginScreenProps) {
           style={styles.header}
         >
           <View style={styles.logoContainer}>
-            <Text style={styles.logoEmoji}>🧠</Text>
-            <Text style={styles.appName}>Mental Health Tracker</Text>
+            <Image 
+              source={require('../../assets/icon.png')} 
+              style={styles.logoImage} 
+              resizeMode="contain" 
+            />
+            <Text style={styles.appName}>Mindscape</Text>
             <Text style={styles.tagline}>Track your journey to better mental health</Text>
           </View>
         </LinearGradient>
@@ -368,7 +373,7 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1 },
   header: { paddingTop: 60, paddingBottom: 40, paddingHorizontal: 20, alignItems: 'center' },
   logoContainer: { alignItems: 'center' },
-  logoEmoji: { fontSize: 64, marginBottom: 10 },
+  logoImage: { width: 80, height: 80, marginBottom: 10, borderRadius: 20 },
   appName: { fontSize: 28, fontWeight: 'bold', color: '#ffffff', marginBottom: 5 },
   tagline: { fontSize: 16, color: '#ffffff', opacity: 0.9, textAlign: 'center' },
   formContainer: { flex: 1, padding: 20, paddingTop: 30 },

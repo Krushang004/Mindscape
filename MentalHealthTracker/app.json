@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "Mental Health Tracker",
+    "name": "Mindscape",
     "slug": "mental-health-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#667eea"
+      "backgroundColor": "#0F1117"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -35,7 +35,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#667eea"
+        "backgroundColor": "#0F1117"
       },
       "package": "com.mentalhealthtracker.app",
       "versionCode": 1,
@@ -92,7 +92,7 @@
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#667eea",
+          "color": "#4C6FFF",
           "sounds": []
         }
       ],

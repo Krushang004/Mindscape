@@ -394,8 +394,8 @@ const SettingsScreen = ({ navigation, onLogout }: SettingsScreenProps) => {
         <Switch
           value={switchValue}
           onValueChange={onSwitchChange}
-          trackColor={{ false: colors.switchTrack, true: colors.switchActiveTrack }}
-          thumbColor={switchValue ? colors.switchActiveThumb : colors.switchThumb}
+          trackColor={{ false: colors.border, true: 'rgba(76, 111, 255, 0.5)' }}
+          thumbColor={switchValue ? colors.primary : '#ffffff'}
         />
       ) : showArrow ? (
         <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
@@ -433,23 +433,36 @@ const SettingsScreen = ({ navigation, onLogout }: SettingsScreenProps) => {
     },
     section: {
       marginBottom: 20,
+      marginHorizontal: 16,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.border,
+      shadowColor: 'rgba(76, 111, 255, 0.15)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 2,
     },
     sectionHeader: {
       paddingHorizontal: 20,
-      paddingVertical: 10,
-      backgroundColor: colors.surface,
+      paddingVertical: 12,
+      backgroundColor: 'transparent',
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
     },
     sectionTitle: {
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: 'bold',
-      color: colors.text,
+      color: colors.primary,
       textTransform: 'uppercase',
       letterSpacing: 1,
     },
     settingItem: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: colors.card,
+      backgroundColor: 'transparent',
       paddingHorizontal: 20,
       paddingVertical: 15,
       borderBottomWidth: 1,
@@ -459,10 +472,12 @@ const SettingsScreen = ({ navigation, onLogout }: SettingsScreenProps) => {
       width: 40,
       height: 40,
       borderRadius: 20,
-      backgroundColor: colors.surface,
+      backgroundColor: 'rgba(76, 111, 255, 0.1)',
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: 15,
+      borderWidth: 1,
+      borderColor: 'rgba(76, 111, 255, 0.2)',
     },
     settingContent: {
       flex: 1,
@@ -484,10 +499,18 @@ const SettingsScreen = ({ navigation, onLogout }: SettingsScreenProps) => {
       alignItems: 'center',
     },
     modalContent: {
-      borderRadius: 15,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
       padding: 20,
       width: '90%',
       maxWidth: 400,
+      borderWidth: 1,
+      borderColor: colors.border,
+      shadowColor: 'rgba(76, 111, 255, 0.15)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+      elevation: 5,
     },
     modalHeader: {
       flexDirection: 'row',

@@ -115,7 +115,7 @@ export default function ApiTestComponent() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>🧠 API Integration Test</Text>
+        <Text style={styles.title}>API Integration Test</Text>
         <Text style={styles.subtitle}>Testing Django Backend Connection</Text>
         <TouchableOpacity style={styles.testButton} onPress={handleTestConnection}>
           <Text style={styles.testButtonText}>Test Connection</Text>
