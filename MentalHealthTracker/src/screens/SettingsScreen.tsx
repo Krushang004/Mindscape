@@ -11,6 +11,7 @@ import {
   Share,
   TextInput,
   Modal,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,7 +27,9 @@ import { reportFeedback } from '../utils/errorReporting';
 import PrivacyPolicyModal from '../components/PrivacyPolicyModal';
 import TermsOfServiceModal from '../components/TermsOfServiceModal';
 import AppLockScreen from '../components/AppLockScreen';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { isAppLockEnabled, enableAppLock, disableAppLock, changeAppLockPin } from '../utils/appLock';
+import { scheduleDailyReminder, cancelAllReminders } from '../utils/notifications';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -63,6 +66,7 @@ const SettingsScreen = ({ navigation, onLogout }: SettingsScreenProps) => {
   const [appLockEnabled, setAppLockEnabled] = useState(false);
   const [appLockSetupVisible, setAppLockSetupVisible] = useState(false);
   const [appLockChangePinVisible, setAppLockChangePinVisible] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -160,6 +164,16 @@ const SettingsScreen = ({ navigation, onLogout }: SettingsScreenProps) => {
     try {
       await saveUserSettings(updatedSettings);
       
+      if (key === 'reminderEnabled') {
+        if (value) {
+          await scheduleDailyReminder(updatedSettings.reminderTime);
+        } else {
+          await cancelAllReminders();
+        }
+      } else if (key === 'reminderTime' && updatedSettings.reminderEnabled) {
+        await scheduleDailyReminder(value as string);
+      }
+      
       // If updating name, also sync with AsyncStorage auth
       if (key === 'name') {
         try {
@@ -177,6 +191,15 @@ const SettingsScreen = ({ navigation, onLogout }: SettingsScreenProps) => {
     } catch (error) {
       console.error('Error saving settings:', error);
       Alert.alert('Error', 'Failed to save settings. Please try again.');
+    }
+  };
+
+  const handleTimeChange = (event: any, selectedDate?: Date) => {
+    setShowTimePicker(Platform.OS === 'ios');
+    if (selectedDate) {
+      const hours = selectedDate.getHours().toString().padStart(2, '0');
+      const minutes = selectedDate.getMinutes().toString().padStart(2, '0');
+      updateSetting('reminderTime', `${hours}:${minutes}`);
     }
   };
 
@@ -639,11 +662,22 @@ const SettingsScreen = ({ navigation, onLogout }: SettingsScreenProps) => {
           showSwitch={true}
           switchValue={settings.reminderEnabled}
           onSwitchChange={(value: boolean) => updateSetting('reminderEnabled', value)}
-          onPress={() => {
-            // Implementation for editing reminder time would go here
-            Alert.alert('Edit Reminder Time', 'Reminder time editing feature coming soon!');
-          }}
+          onPress={() => setShowTimePicker(true)}
         />
+        {showTimePicker && (
+          <DateTimePicker
+            value={(() => {
+              const date = new Date();
+              const [hours, minutes] = settings.reminderTime.split(':').map(Number);
+              date.setHours(hours, minutes, 0, 0);
+              return date;
+            })()}
+            mode="time"
+            is24Hour={true}
+            display="default"
+            onChange={handleTimeChange}
+          />
+        )}
         <SettingItem
           title="Notifications"
           subtitle="Push notifications for reminders"

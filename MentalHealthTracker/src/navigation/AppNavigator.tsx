@@ -8,6 +8,7 @@ import { useTheme } from '../context/ThemeContext';
 import { saveUserSettings, getUserSettings, createUser, validateUserCredentials, getUserByEmail } from '../utils/database';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import { scheduleDailyReminder } from '../utils/notifications';
 
 // Screens
 import DashboardScreen from '../screens/DashboardScreen';
@@ -259,6 +260,11 @@ const AppNavigator = () => {
               name: userSettings.name,
               email: userSettings.email,
             };
+            
+            if (userSettings.reminderEnabled && userSettings.reminderTime) {
+              scheduleDailyReminder(userSettings.reminderTime).catch(console.error);
+            }
+            
             try {
               await AsyncStorage.setItem('user_auth', JSON.stringify(updatedUser));
               await AsyncStorage.setItem('is_authenticated', 'true');
@@ -357,6 +363,9 @@ const AppNavigator = () => {
           updatedAt: new Date().toISOString(),
         };
         await saveUserSettings(userSettings);
+        if (userSettings.reminderEnabled && userSettings.reminderTime) {
+          await scheduleDailyReminder(userSettings.reminderTime);
+        }
       } else {
         // Update name with Google name if available
         if (googleUserName) {
@@ -371,6 +380,9 @@ const AppNavigator = () => {
         }
         userSettings.updatedAt = new Date().toISOString();
         await saveUserSettings(userSettings);
+        if (userSettings.reminderEnabled && userSettings.reminderTime) {
+          await scheduleDailyReminder(userSettings.reminderTime);
+        }
       }
 
       // Use Google user name if available for the user object
@@ -463,6 +475,9 @@ const AppNavigator = () => {
         updatedAt: new Date().toISOString(),
       };
       await saveUserSettings(userSettings);
+      if (userSettings.reminderEnabled && userSettings.reminderTime) {
+        await scheduleDailyReminder(userSettings.reminderTime);
+      }
 
       const user = {
         id: userData.user.id,
