@@ -1,4 +1,4 @@
-# 🧠 Mental Health Tracker
+# 🧠 Mindscape
 
 A beautiful, offline-first desktop application for tracking your mental health and emotional well-being. Built with Electron and React, this app keeps all your data local and private.
 
