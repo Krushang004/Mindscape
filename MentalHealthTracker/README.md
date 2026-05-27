@@ -220,10 +220,9 @@ npx expo export:web
 
 ## 📚 Documentation
 
-For detailed technical documentation, see:
-- [Technical Documentation](./TECHNICAL_DOCUMENTATION.md)
-- [API Documentation](./API_DOCUMENTATION.md)
-- [Component Library](./COMPONENT_LIBRARY.md)
+For detailed documentation, see:
+- [Changelog & Fix History](../CHANGELOG.md) — all bug fixes, OAuth setup, and configuration changes
+- [Backend Documentation](../backend_django/README.md) — Django REST API reference
 
 ## 🤝 Contributing
 
@@ -252,36 +251,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📋 How to Convert Documentation to PDF
-
-### Option 1: Using Online Tools
-1. Copy the content from `TECHNICAL_DOCUMENTATION.md`
-2. Go to [MD to PDF](https://md-to-pdf.fly.dev/) or [Pandoc Online](https://pandoc.org/try/)
-3. Paste the markdown content
-4. Download the generated PDF
-
-### Option 2: Using VS Code
-1. Install the "Markdown PDF" extension
-2. Open `TECHNICAL_DOCUMENTATION.md`
-3. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
-4. Type "Markdown PDF: Export (pdf)"
-5. Select the option to generate PDF
-
-### Option 3: Using Pandoc (Command Line)
-```bash
-# Install Pandoc first
-npm install -g pandoc
-
-# Convert markdown to PDF
-pandoc TECHNICAL_DOCUMENTATION.md -o MentalHealthTracker_Technical_Documentation.pdf
-```
-
-### Option 4: Using Browser Print
-1. Open `TECHNICAL_DOCUMENTATION.md` in a markdown viewer
-2. Press `Ctrl+P` (or `Cmd+P` on Mac)
-3. Select "Save as PDF"
-4. Choose your desired settings and save
-
----
-
-*This README provides a comprehensive overview of the Mental Health Tracker application. For detailed technical information, refer to the technical documentation.* 
+*This README provides a comprehensive overview of the Mental Health Tracker application. For fix history and configuration notes, see [CHANGELOG.md](../CHANGELOG.md).*
