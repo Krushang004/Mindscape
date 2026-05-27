@@ -1,238 +1,206 @@
-# 🧠 Mindscape
+# 🧠 Mindscape — Mental Health Tracker
 
-A beautiful, offline-first desktop application for tracking your mental health and emotional well-being. Built with Electron and React, this app keeps all your data local and private.
-
-## ✨ Features
-
-### Core Features
-
--   **Mood Tracking**: 
-    -   Daily mood check-in (emojis, sliders, or custom icons)
-    -   Option to add notes, journal entries, or triggers
-    -   Graphs showing weekly/monthly mood trends
--   **Journal / Diary**: 
-    -   Text or voice journaling
-    -   Mood tagging (e.g., “anxious,” “grateful,” “tired”)
-    -   Optional AI summarization or sentiment analysis
--   **Habit & Routine Tracker**: 
-    -   Track mental health-related habits (e.g., sleep, exercise, water, meditation)
-    -   Streaks and progress visualization
--   **Mental Health Assessments**: 
-    -   Scientifically backed questionnaires (PHQ-9, GAD-7, etc.)
-    -   Automated scoring with recommendations
-
-### Engagement & Motivation
-
--   **Daily Reminders**: 
-    -   Custom notifications for journaling, meditation, or check-ins
-    -   Smart reminders based on user’s patterns
--   **Motivational Quotes / Affirmations**: 
-    -   Personalized daily inspiration
-    -   Option to save or favorite quotes
--   **Gamification**: 
-    -   Streaks, badges, milestones for consistency
-    -   Progress visualization and gentle nudges
-
-### Support & Social Connection
-
--   **Emergency / SOS Feature**: 
-    -   Button to contact nominee / therapist / hotline
-    -   Quick geolocation-based help (optional)
--   **Nominee Alert System**: 
-    -   Sends alert to trusted contact if stress levels exceed threshold
-    -   Maintains privacy (doesn’t show journal content)
--   **Community Support (Optional)**: 
-    -   Anonymous discussion boards
-    -   Peer encouragement or moderated groups
-
-### Therapeutic Tools
-
--   **Guided Meditation & Breathing Exercises**: 
-    -   Built-in sessions for stress, anxiety, focus, or sleep
-    -   Animated breathing visuals
--   **Cognitive Behavioral Therapy (CBT) Tools**: 
-    -   Thought diary
-    -   Reframing negative thoughts
--   **Mindfulness Timer / Relaxation Sounds**: 
-    -   Ambient music or sleep stories
-
-### AI & Smart Insights
-
--   **AI Mood Prediction**: 
-    -   Detect mood trends using past data
-    -   Suggest activities (e.g., walk, rest, talk to a friend)
--   **AI Chat Support (Optional)**: 
-    -   Empathetic chatbot trained for positive reinforcement
-    -   Integrate GPT-based journaling suggestions
--   **Smart Reports**: 
-    -   Weekly summaries & stress level graphs
-    -   Export data as PDF for therapists
-
-### Privacy & Security
-
--   **End-to-End Encryption**: 
-    -   Secure journals & user data
--   **Anonymous Mode**: 
-    -   No personal info required to use app
--   **PIN / Biometric Lock**: 
-    -   Face ID or fingerprint protection
-
-### Technical & UX Enhancements
-
--   **Offline Mode**: 
-    -   Save entries locally (sync when online)
--   **Custom Themes**: 
-    -   Light/Dark mode, calming color palettes
--   **Voice Input**: 
-    -   Record emotional logs hands-free
--   **Cloud Backup**: 
-    -   Option to restore on reinstall / multiple devices
-
-### Advanced / Unique Ideas
-
--   **AR-Based Relaxation**: 
-    -   Visual breathing guides using AR filters
--   **Wearable Integration**: 
-    -   Sync data from smartwatch (heart rate, sleep, stress)
--   **Therapist Portal**: 
-    -   Allow optional sharing of progress with professionals
--   **AI Sentiment Journal Analysis**: 
-    -   Detect patterns like burnout, insomnia, or anxiety spikes
--   **Crisis Detection**: 
-    -   Trigger alert if user enters worrying text patterns (“I can’t do this anymore”) — with ethical and optional consent
--   **Personalized Wellness Plan**: 
-    -   AI-generated daily plan based on stress and habits
--   **Voice Emotion Recognition**: 
-    -   Detect stress from tone during journaling (advanced)
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js (v16 or higher)
-- npm
-
-### OAuth Redirect Server (Express + Vercel)
-Google Sign-In now runs through a dedicated Express server (`server.js`). The same logic is shared with the legacy Vercel serverless handler via `lib/googleOAuthCallback.js`, so you can deploy either as a long-running Node service (Render/Railway/Fly/etc.) or as a single Vercel function.
-
-#### Deploying as a server (recommended)
-1. Set the following environment variables wherever you host the Node server:
-   - `GOOGLE_CLIENT_ID`
-   - `GOOGLE_CLIENT_SECRET`
-   - `APP_DEEP_LINK` (defaults to `mentalhealthtracker://auth`)
-   - `PUBLIC_BASE_URL` (set to your server’s public HTTPS URL)
-   - `DJANGO_API_BASE_URL` (points at your Django backend, e.g. `https://api.example.com`)
-2. Deploy `server.js` — for example `npm run start` locally or via Docker/PM2.
-3. Add `https://<your-domain>/auth/google/callback` to the Authorized redirect URIs in Google Cloud Console.
-4. Update `MentalHealthTracker/src/config.ts` so `OAUTH_REDIRECT_BASE` matches the deployed domain.
-
-#### Deploying on Vercel
-`vercel.json` now routes all traffic to `server.js`, so Vercel hosts the same Express app behind a serverless entry point. Configure the same environment variables inside Vercel, redeploy, and the OAuth callback will behave identically.
-
-The rest of the application (`API_BASE`) can continue pointing at your Django backend; only the OAuth hop is handled by this Node service.
-
-#### Syncing Google logins into Django
-The OAuth server now forwards every successful Google login to your Django backend by POSTing the received `id_token` (and access token when available) to `${DJANGO_API_BASE_URL}/auth/google`. Configure `DJANGO_API_BASE_URL` so the Express server can reach your Django deployment (local tunnel, ngrok, Render, etc.). This keeps the canonical user profile inside Django’s database automatically—no extra work on the mobile app is needed.
-
-### Installation
-
-1. **Clone or download this project**
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Build the app**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Run the app**:
-   ```bash
-   npm start
-   ```
-
-## 📱 How to Use
-
-### Daily Entry
-1. **Select Your Mood**: Click on an emoji that represents how you're feeling
-2. **Write a Summary**: Describe your day in one sentence
-3. **Optional Journaling**: Add more details if you want
-4. **Get Suggestions**: The app will show helpful suggestions based on your mood
-5. **Save**: Click "Save Today's Entry" to store your entry
-
-### Viewing History
-- Switch to the "History" tab to see all your past entries
-- Click on any entry to view full details
-- Entries are sorted by date (newest first)
-
-## 🎨 Mood Options
-
-- 😊 **Happy** - Feeling joyful and content
-- 😔 **Sad** - Feeling down or blue
-- 😡 **Angry** - Feeling frustrated or upset
-- 😰 **Anxious** - Feeling worried or nervous
-- 😴 **Tired** - Feeling exhausted or sleepy
-- 😌 **Calm** - Feeling peaceful and relaxed
-- 🤔 **Confused** - Feeling uncertain or unclear
-- 😤 **Frustrated** - Feeling stuck or annoyed
-- 🥰 **Loved** - Feeling cared for and appreciated
-- 😎 **Confident** - Feeling strong and capable
-
-## 🔧 Development
-
-### Project Structure
-```
-mental-health-tracker/
-├── src/
-│   ├── components/     # React components
-│   ├── types.ts        # TypeScript definitions
-│   ├── App.tsx         # Main app component
-│   ├── index.tsx       # React entry point
-│   └── styles.css      # App styles
-├── public/
-│   └── index.html      # HTML template
-├── main.js             # Electron main process
-├── webpack.config.js   # Webpack configuration
-└── package.json        # Project dependencies
-```
-
-### Available Scripts
-- `npm run dev` - Build and start the app in development mode
-- `npm start` - Start the app (requires build first)
-- `npm run build` - Build for production
-- `npm run watch` - Watch for changes and rebuild
-
-## 🔒 Privacy & Data
-
-- **100% Offline**: No data is ever sent to external servers
-- **Local Storage**: All entries are stored locally on your device
-- **No Tracking**: No analytics, tracking, or data collection
-- **Your Data**: You have complete control over your mental health data
-
-## 🛠️ Built With
-
-- **Electron** - Cross-platform desktop app framework
-- **React** - User interface library
-- **TypeScript** - Type-safe JavaScript
-- **Webpack** - Module bundler
-- **CSS3** - Modern styling with gradients and animations
-
-## 📄 License
-
-This project is open source and available under the [ISC License](LICENSE).
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 💡 Tips for Mental Health
-
-- **Be Consistent**: Try to make an entry every day
-- **Be Honest**: Your entries are private - be truthful about your feelings
-- **Use the Suggestions**: The app's suggestions are designed to help
-- **Review Regularly**: Check your history to spot patterns
-- **Seek Help**: If you're struggling, don't hesitate to reach out to professionals
+A comprehensive mental health tracking platform built with React Native (Expo), Django REST API, and a Node.js OAuth server. Mindscape helps users monitor mood, build healthy habits, set goals, and gain insights into their mental well-being — all in a clean, privacy-first mobile experience.
 
 ---
 
-**Remember**: This app is a tool to help you track your mental health, but it's not a substitute for professional mental health care. If you're experiencing severe distress, please reach out to a mental health professional or crisis hotline. 
+## Screenshots
+
+<p align="center">
+  <img src="Screenshots/Screenshot_20260315-110240_Mindscape.jpg" width="18%" alt="Login" />&nbsp;
+  <img src="Screenshots/Screenshot_20260315-110324_Mindscape.jpg" width="18%" alt="Dashboard" />&nbsp;
+  <img src="Screenshots/Screenshot_20260315-110331_Mindscape.jpg" width="18%" alt="Daily Entry" />&nbsp;
+  <img src="Screenshots/Screenshot_20260315-110340_Mindscape.jpg" width="18%" alt="Mood Tracking" />&nbsp;
+  <img src="Screenshots/Screenshot_20260315-110345_Mindscape.jpg" width="18%" alt="Analytics" />
+</p>
+<p align="center">
+  <img src="Screenshots/Screenshot_20260315-110348_Mindscape.jpg" width="18%" alt="Habits" />&nbsp;
+  <img src="Screenshots/Screenshot_20260315-110353_Mindscape.jpg" width="18%" alt="Settings" />
+</p>
+
+---
+
+## Project Structure
+
+```
+mental health tracker/
+├── MentalHealthTracker/     ← React Native / Expo mobile app (primary frontend)
+├── backend_django/          ← Django REST API (primary backend)
+├── api/                     ← Vercel serverless functions (Google OAuth)
+├── lib/                     ← Shared Node.js utilities (MongoDB, JWT, User model)
+├── server.js                ← Express OAuth server (Vercel / standalone)
+└── Screenshots/             ← App screenshots
+```
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Mobile App | React Native 0.81, Expo SDK 54, TypeScript |
+| Navigation | React Navigation v7 (Stack + Bottom Tabs) |
+| State / Data | TanStack React Query v5, AsyncStorage |
+| Local DB | expo-sqlite (offline-first) |
+| Backend | Django 4.2, Django REST Framework 3.15 |
+| Auth | Google OAuth 2.0, Firebase Auth, JWT |
+| OAuth Server | Node.js / Express (Vercel) |
+| Database | SQLite (dev) → PostgreSQL (prod) |
+| Build | EAS Build (Expo Application Services) |
+
+---
+
+## Features
+
+### Authentication
+- Google Sign-In (native + web OAuth flow)
+- Email / password login and signup
+- OTP-based password reset via email
+- App lock with PIN / biometric (auto-lock on background)
+
+### Mood & Daily Tracking
+- 5-level mood system: Excellent / Good / Neutral / Bad / Terrible
+- Daily mental health entries — mood, sleep hours, energy (1–10), stress (1–10), notes
+- Multiple mood logs throughout the day
+
+### Goals & Habits
+- Goal types: daily, weekly, monthly, long-term with progress tracking
+- Habit tracker with streak tracking (current + longest)
+- Per-habit reminder times and completion toggle
+
+### Wellness Tools
+- Meditation and breathing sessions (mindfulness, guided, body scan, etc.)
+- Mood before/after session tracking
+
+### Assessments
+- PHQ-9 (depression) and GAD-7 (anxiety) questionnaires
+- Auto-scoring with result categories (Minimal / Mild / Moderate / Severe)
+- Historical response tracking
+
+### Insights & Analytics
+- Mood trends over time
+- Habit performance and completion rates
+- Sleep-mood and activity-mood correlations
+- Stress patterns by day of week
+- AI-generated wellness suggestions and insights
+
+### Privacy & Settings
+- Dark / Light theme
+- Privacy mode
+- Data export
+- Trusted contacts (nominees) with stress-threshold auto-alerts
+
+---
+
+## Quick Start
+
+### Mobile App
+
+```bash
+cd MentalHealthTracker
+npm install
+npx expo start
+```
+
+Scan the QR code with Expo Go, or press `a` for Android emulator / `i` for iOS simulator.
+
+### Django Backend
+
+```bash
+cd backend_django
+pip install -r requirements.txt
+cp env.example .env        # fill in your values
+python manage.py migrate
+python manage.py populate_initial_data
+python manage.py runserver
+```
+
+The API will be available at `http://localhost:8000/api/`.
+
+### OAuth Server (Vercel / Node.js)
+
+Set the following environment variables (in `.env` locally or in the Vercel dashboard):
+
+```env
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+APP_DEEP_LINK=mentalhealthtracker://auth
+PUBLIC_BASE_URL=https://your-vercel-app.vercel.app
+DJANGO_API_BASE_URL=https://your-django-backend.com
+```
+
+Deploy to Vercel with `vercel --prod`, or run locally with `node server.js`.
+
+---
+
+## Environment Variables
+
+### `MentalHealthTracker/.env`
+
+```env
+EXPO_PUBLIC_FIREBASE_API_KEY=...
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
+EXPO_PUBLIC_GOOGLE_CLIENT_ID=...
+EXPO_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
+### `backend_django/.env`
+
+```env
+DJANGO_SECRET_KEY=...
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GOOGLE_REDIRECT_URI=http://127.0.0.1:8000/auth/google/callback
+APP_JWT_SECRET=...
+EMAIL_HOST_PASSWORD=...          # Gmail App Password for OTP emails
+FIREBASE_CREDENTIALS_PATH=...   # Optional: path to Firebase service account JSON
+```
+
+---
+
+## Building for Production
+
+### Android APK
+
+```bash
+cd MentalHealthTracker
+
+# Preview build (for testing)
+eas build --platform android --profile preview
+
+# Production build
+eas build --platform android --profile production
+```
+
+### iOS
+
+```bash
+# Development (simulator)
+eas build --platform ios --profile development
+
+# Production (App Store)
+eas build --platform ios --profile production
+```
+
+---
+
+## Documentation
+
+| File | Contents |
+|------|----------|
+| [MentalHealthTracker/README.md](./MentalHealthTracker/README.md) | Mobile app setup, features, build commands, environment config |
+| [backend_django/README.md](./backend_django/README.md) | Django API endpoints, data models, deployment guide |
+| [CHANGELOG.md](./CHANGELOG.md) | All bug fixes, OAuth setup issues, and configuration changes made during development |
+
+---
+
+## Author
+
+**Krushang Prajapati**
+- Email: krushangrprajapati@gmail.com
+- GitHub: [@krushang_04](https://github.com/krushang_04)
+
+---
+
+> Mindscape is a tool to help track your mental health — not a substitute for professional care. If you're experiencing severe distress, please reach out to a mental health professional.
