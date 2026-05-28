@@ -10,6 +10,7 @@ import string
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
+from .throttles import AuthRateThrottle
 from .models import (
     User, Mood, Activity, Goal, DailyEntry, EntryActivity, MoodLog, Suggestion,
     MeditationSession, Habit, HabitCompletion, Insight,
@@ -57,7 +58,8 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny],
+            throttle_classes=[AuthRateThrottle])
     def request_password_reset_otp(self, request):
         """Request OTP for password reset - works for any email"""
         email = request.data.get('email', '').strip().lower()
@@ -135,7 +137,8 @@ Mental Health Tracker Team''',
         
         return Response(response_data, status=status.HTTP_200_OK)
     
-    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny],
+            throttle_classes=[AuthRateThrottle])
     def verify_password_reset_otp(self, request):
         """Verify OTP for password reset"""
         email = request.data.get('email', '').strip().lower()
@@ -168,7 +171,8 @@ Mental Health Tracker Team''',
             'verified': True
         }, status=status.HTTP_200_OK)
     
-    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny],
+            throttle_classes=[AuthRateThrottle])
     def reset_password(self, request):
         """Reset password using verified OTP - creates user if doesn't exist"""
         email = request.data.get('email', '').strip().lower()

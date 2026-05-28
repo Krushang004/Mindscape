@@ -102,6 +102,24 @@ SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '0'))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE_HSTS_SECONDS > 0
 SECURE_HSTS_PRELOAD = SECURE_HSTS_SECONDS > 0
 
+# Cache — used by DRF throttling.
+# Dev: in-memory (no setup needed).
+# Prod: set CACHE_URL=redis://... for a shared cache across workers.
+_cache_url = os.getenv('CACHE_URL', '')
+if _cache_url:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': _cache_url,
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        }
+    }
+
 # Custom user model
 AUTH_USER_MODEL = 'tracker.User'
 
@@ -118,6 +136,18 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
+    # Rate limiting — env-driven so you can tune without a redeploy.
+    # Defaults: anonymous 100/hour, authenticated users 1000/hour,
+    # sensitive auth endpoints (OTP, Google login) 10/hour.
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': os.getenv('THROTTLE_RATE_ANON', '100/hour'),
+        'user': os.getenv('THROTTLE_RATE_USER', '1000/hour'),
+        'auth': os.getenv('THROTTLE_RATE_AUTH', '10/hour'),
+    },
 }
 
 # CORS — open in dev, restricted in production.

@@ -9,6 +9,9 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 import firebase_admin
 from firebase_admin import credentials, auth as firebase_auth
+from rest_framework.decorators import api_view, throttle_classes
+from rest_framework.throttling import AnonRateThrottle
+from tracker.throttles import AuthRateThrottle
 from .settings import GOOGLE_CLIENT_ID, APP_JWT_SECRET, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, APP_DEEP_LINK
 
 # Disable Google Cloud metadata service lookup (prevents ENOTFOUND errors on non-GCP platforms)
@@ -39,10 +42,10 @@ if not firebase_admin._apps:
 
 User = get_user_model()
 
+@api_view(['POST'])
+@throttle_classes([AuthRateThrottle])
 @csrf_exempt
 def google_auth(request):
-    if request.method != 'POST':
-        return JsonResponse({'message': 'Method not allowed'}, status=405)
     try:
         body = json.loads(request.body.decode('utf-8'))
         id_token_str = body.get('idToken')
