@@ -13,6 +13,9 @@ All notable changes, bug fixes, and configuration resolutions made during develo
 5. [Deep Link & Redirect URI Setup](#5-deep-link--redirect-uri-setup)
 6. [API Token & Navigation Fixes](#6-api-token--navigation-fixes)
 7. [Tunneling & HTTPS Setup for Local Development](#7-tunneling--https-setup-for-local-development)
+8. [Vercel Deployment Fixes](#8-vercel-deployment-fixes)
+9. [ngrok Setup for Local Development](#9-ngrok-setup-for-local-development)
+10. [Backend Security & Configuration Fixes](#10-backend-security--configuration-fixes)
 
 ---
 
@@ -499,3 +502,147 @@ The free ngrok URL changes on every restart. Each time it changes:
 3. Wait 1–2 minutes before testing
 
 For a permanent URL, use a named Cloudflare Tunnel or upgrade to ngrok paid plan.
+
+---
+
+## 10. Backend Security & Configuration Fixes
+
+The following issues were identified in the Django backend and resolved in sequence.
+
+---
+
+### Fix 1 — JWT not wired into DRF (`tracker/authentication.py`)
+
+**Problem:** All ViewSets used `permission_classes = [IsAuthenticated]`, but DRF's built-in `TokenAuthentication` expects `Authorization: Token <drf_token>`. The mobile app sends `Authorization: Bearer <custom_JWT>` issued by `/auth/google`. DRF never matched the scheme, so `request.user` was always `AnonymousUser` and every protected endpoint returned 401.
+
+**Fix:** Created `backend_django/tracker/authentication.py` with a custom `JWTAuthentication` class extending `BaseAuthentication`:
+- Reads `Authorization: Bearer <token>` from the request header
+- Decodes the JWT using `APP_JWT_SECRET` (same secret used when the token is issued)
+- Looks up the user by `uid` from the payload and returns `(user, token)` to DRF
+- Raises `AuthenticationFailed` with a clear message on expired or invalid tokens
+- Returns `None` if the header is absent or uses a different scheme, allowing other authenticators to try
+
+**`settings.py` change:**
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'tracker.authentication.JWTAuthentication',   # ← new
+        'rest_framework.authentication.SessionAuthentication',  # kept for /admin/
+    ],
+    ...
+}
+```
+
+**Files changed:**
+- `backend_django/tracker/authentication.py` — new file
+- `backend_django/server/settings.py` — replaced `TokenAuthentication` with `JWTAuthentication`
+
+---
+
+### Fix 2 — `DEBUG = True` hardcoded + related production settings
+
+**Problem:** `DEBUG`, `ALLOWED_HOSTS`, `CORS_ALLOW_ALL_ORIGINS`, `AUTH_PASSWORD_VALIDATORS`, and all security headers were hardcoded. `DEBUG = True` could never be turned off without editing source code. `AUTH_PASSWORD_VALIDATORS` was an empty list `[]`.
+
+**Fix:** All settings now read from environment variables with safe defaults:
+
+| Setting | Env var | Dev default | Prod recommendation |
+|---------|---------|-------------|---------------------|
+| `DEBUG` | `DEBUG` | `True` | `False` |
+| `ALLOWED_HOSTS` | `ALLOWED_HOSTS` | `['*']` in dev | `api.yourdomain.com` |
+| `CORS_ALLOW_ALL_ORIGINS` | `CORS_ALLOWED_ORIGINS` | `True` in dev | `False` + explicit origins |
+| `SECURE_SSL_REDIRECT` | `SECURE_SSL_REDIRECT` | `False` | `True` |
+| `SESSION_COOKIE_SECURE` | `SESSION_COOKIE_SECURE` | `False` | `True` |
+| `CSRF_COOKIE_SECURE` | `CSRF_COOKIE_SECURE` | `False` | `True` |
+| `SECURE_HSTS_SECONDS` | `SECURE_HSTS_SECONDS` | `0` | `31536000` |
+
+`AUTH_PASSWORD_VALIDATORS` now includes all four standard Django validators (similarity, minimum length, common password, numeric-only).
+
+**Files changed:**
+- `backend_django/server/settings.py`
+- `backend_django/env.example` — documented all new variables
+
+---
+
+### Fix 3 — SQLite hardcoded, no PostgreSQL path
+
+**Problem:** `DATABASES` was hardcoded to SQLite with no way to switch to PostgreSQL for production without editing source code.
+
+**Fix:** Added `dj-database-url` to parse a `DATABASE_URL` connection string. SQLite remains the default for local dev — no changes needed there. Switching to PostgreSQL in production requires only one env var.
+
+**`requirements.txt` additions:**
+```
+dj-database-url==2.2.0
+psycopg2-binary==2.9.9
+```
+
+**`settings.py` change:**
+```python
+import dj_database_url
+
+_default_db = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', _default_db),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
+```
+
+**To use PostgreSQL in production** — set one env var:
+```env
+DATABASE_URL=postgres://user:password@host:5432/dbname
+```
+Platforms like Render, Railway, and Fly.io set `DATABASE_URL` automatically when a PostgreSQL database is provisioned.
+
+**Files changed:**
+- `backend_django/server/settings.py`
+- `backend_django/requirements.txt`
+- `backend_django/env.example`
+
+---
+
+### Fix 4 — No API rate limiting
+
+**Problem:** No throttling was configured. The `env.example` mentioned throttle rate variables but they were never wired into `settings.py`. Auth endpoints (Google login, OTP request/verify/reset) were completely unprotected against brute-force and abuse.
+
+**Fix:** Added DRF throttling with three tiers, all env-driven:
+
+| Throttle class | Scope | Default rate | Applied to |
+|----------------|-------|-------------|------------|
+| `AnonRateThrottle` | `anon` | `100/hour` | All unauthenticated requests |
+| `UserRateThrottle` | `user` | `1000/hour` | All authenticated requests |
+| `AuthRateThrottle` | `auth` | `10/hour` | Login + OTP endpoints (by IP) |
+
+**New file `backend_django/tracker/throttles.py`:**
+```python
+from rest_framework.throttling import AnonRateThrottle
+
+class AuthRateThrottle(AnonRateThrottle):
+    scope = 'auth'  # maps to THROTTLE_RATE_AUTH env var
+```
+
+**`AuthRateThrottle` applied to:**
+- `POST /auth/google` — Google login
+- `POST /api/users/request_password_reset_otp/`
+- `POST /api/users/verify_password_reset_otp/`
+- `POST /api/users/reset_password/`
+
+**Cache backend** (throttle counters need a cache):
+- Dev: `LocMemCache` (in-process, zero setup)
+- Prod: Redis via `CACHE_URL` env var — required for correct counting across multiple workers
+
+**Env vars to tune rates without redeploying:**
+```env
+THROTTLE_RATE_ANON=100/hour
+THROTTLE_RATE_USER=1000/hour
+THROTTLE_RATE_AUTH=10/hour
+CACHE_URL=redis://localhost:6379/0   # prod only
+```
+
+**Files changed:**
+- `backend_django/tracker/throttles.py` — new file
+- `backend_django/server/settings.py` — added cache config + throttle config to `REST_FRAMEWORK`
+- `backend_django/server/views.py` — applied `AuthRateThrottle` to `google_auth`
+- `backend_django/tracker/views.py` — applied `AuthRateThrottle` to OTP actions
+- `backend_django/env.example` — documented all new vars
