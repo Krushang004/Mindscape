@@ -7,8 +7,14 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'replace-me')
-DEBUG = True
-ALLOWED_HOSTS = ['*', '192.168.0.106', 'localhost', '127.0.0.1']
+DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('1', 'true', 'yes')
+
+# In production (DEBUG=False) set ALLOWED_HOSTS explicitly via env var.
+# e.g. ALLOWED_HOSTS=api.yourdomain.com,www.yourdomain.com
+_allowed = os.getenv('ALLOWED_HOSTS', '')
+ALLOWED_HOSTS = [h.strip() for h in _allowed.split(',') if h.strip()] if _allowed else (
+    ['*'] if DEBUG else ['localhost', '127.0.0.1']
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -61,7 +67,12 @@ DATABASES = {
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = []
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -70,6 +81,19 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- Security (only active when DEBUG=False) ---
+# Set these in your production .env:
+#   SECURE_SSL_REDIRECT=True
+#   SESSION_COOKIE_SECURE=True
+#   CSRF_COOKIE_SECURE=True
+#   SECURE_HSTS_SECONDS=31536000
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False').strip().lower() in ('1', 'true', 'yes')
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False').strip().lower() in ('1', 'true', 'yes')
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'False').strip().lower() in ('1', 'true', 'yes')
+SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '0'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE_HSTS_SECONDS > 0
+SECURE_HSTS_PRELOAD = SECURE_HSTS_SECONDS > 0
 
 # Custom user model
 AUTH_USER_MODEL = 'tracker.User'
@@ -89,7 +113,14 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS — open in dev, restricted in production.
+# Set CORS_ALLOWED_ORIGINS=https://yourapp.com in prod .env
+_cors_origins = os.getenv('CORS_ALLOWED_ORIGINS', '')
+if DEBUG or not _cors_origins:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(',') if o.strip()]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_HEADERS = [
     'accept',
