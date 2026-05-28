@@ -77,8 +77,10 @@ AUTH_USER_MODEL = 'tracker.User'
 # REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        # Validates "Authorization: Bearer <JWT>" issued by /auth/google
+        'tracker.authentication.JWTAuthentication',
+        # Keep session auth so the Django admin still works
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
